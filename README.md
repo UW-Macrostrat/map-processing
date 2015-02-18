@@ -1,6 +1,9 @@
 # Map processing
 Various scripts for working between and among GMUS/GMNA and Macrostrat
 
+## credentials.py
+Update this first. Everything else depends on it.
+
 ## mysql-to-pg.py
 1. Delete all CSVs in current folder
 2. Dump ````unit_strat_names````, ````strat_names````, ````units_sections````, ````intervals````, ````lookup_unit_intervals````, ````units````, and ````lookup_strat_names```` from MySQL to CSVs

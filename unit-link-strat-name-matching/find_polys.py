@@ -20,15 +20,15 @@ with open("matches.txt", "rb") as input_file :
 
         INSERT INTO gmus.geounits_macrounits_redo (geologic_unit_gid, unit_id, strat_name_id, unit_link, type) (
           WITH units AS (
-             SELECT us.id AS unit_id, lsn.fm_id AS strat_name_id, lsn.fm_name AS strat_name, c.the_geom_voronoi
+             SELECT us.id AS unit_id, lsn.fm_id AS strat_name_id, lsn.fm_name AS strat_name, c.poly_geom
              FROM %(macrostrat_schema)s.units_sections us
              JOIN %(macrostrat_schema)s.unit_strat_names usn ON us.unit_id = usn.unit_id
              JOIN %(macrostrat_schema)s.lookup_strat_names lsn ON usn.strat_name_id = lsn.strat_name_id
-             JOIN macrostrat.cols c ON us.col_id = c.id
+             JOIN %(macrostrat_schema)s.cols c ON us.col_id = c.id
              WHERE c.status_code = 'active' AND lsn.strat_name_id = %(strat_name_id)s
           ), 
           distance AS (
-            SELECT gu.gid, ST_Distance(gu.the_geom::geography, u.the_geom_voronoi::geography)/1000 AS distance, gu.unit_link, u.unit_id, u.strat_name_id
+            SELECT gu.gid, ST_Distance(gu.the_geom::geography, u.poly_geom::geography)/1000 AS distance, gu.unit_link, u.unit_id, u.strat_name_id
             FROM gmus.geologic_units_with_intervals gu, units u
             WHERE unit_link = %(unit_link)s
             ORDER BY gid, distance

@@ -56,7 +56,7 @@ class Task(object):
                  FROM %(macrostrat_schema)s.units_sections us
                  JOIN %(macrostrat_schema)s.unit_strat_names usn ON us.unit_id = usn.unit_id
                  JOIN %(macrostrat_schema)s.lookup_strat_names lsn ON usn.strat_name_id = lsn.strat_name_id
-                 JOIN macrostrat.cols c ON us.col_id = c.id
+                 JOIN %(macrostrat_schema)s.cols c ON us.col_id = c.id
                  WHERE c.status_code = 'active'
               )
          SELECT DISTINCT ON (gmus.gid, strat_name_id, unit_link) gmus.gid, macro.unit_id, macro.strat_name_id, gmus.unit_link, """ + str(self.type) + """ AS type FROM gmus, macro

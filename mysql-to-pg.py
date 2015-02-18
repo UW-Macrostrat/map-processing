@@ -28,6 +28,8 @@ params = {
   "lookup_unit_intervals_path": directory + "/lookup_unit_intervals.csv",
   "units_path": directory + "/units.csv",
   "lookup_strat_names_path": directory + "/lookup_strat_names.csv",
+  "cols_path": directory + "/cols.csv",
+  "col_areas_path": directory + "/col_areas.csv",
   "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)
 }
 
@@ -74,6 +76,18 @@ my_cur.execute("""
 
   SELECT * FROM lookup_strat_names
   INTO OUTFILE %(lookup_strat_names_path)s
+  FIELDS TERMINATED BY ','
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n';
+
+  SELECT id, col_group_id, project_id, status_code, col_position, col, col_name, lat, lng, col_area, null AS coordinate, ST_AsText(coordinate) AS wkt, created FROM cols
+  INTO OUTFILE %(cols_path)s
+  FIELDS TERMINATED BY ','
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n';
+
+  SELECT id, col_id, null as col_area, ST_AsText(col_area) AS wkt FROM col_areas
+  INTO OUTFILE %(col_areas_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
@@ -234,6 +248,57 @@ CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (gp_id);
 CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (sgp_id);
 CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (strat_name);
 
+
+CREATE TABLE %(macrostrat_schema)s.cols (
+  id integer PRIMARY KEY,
+  col_group_id smallint,
+  project_id smallint,
+  status_code character varying(25),
+  col_position character varying(25),
+  col numeric,
+  col_name character varying(100),
+  lat numeric,
+  lng numeric,
+  col_area numeric,
+  coordinate geometry,
+  wkt text,
+  created text
+);
+
+COPY %(macrostrat_schema)s.cols FROM %(cols_path)s NULL '\N' DELIMITER ',' CSV;
+
+UPDATE %(macrostrat_schema)s.cols SET coordinate = ST_GeomFromText(wkt);
+
+CREATE INDEX ON %(macrostrat_schema)s.cols (id);
+CREATE INDEX ON %(macrostrat_schema)s.cols (project_id);
+CREATE INDEX ON %(macrostrat_schema)s.cols USING GIST (coordinate);
+CREATE INDEX ON %(macrostrat_schema)s.cols (col_group_id);
+CREATE INDEX ON %(macrostrat_schema)s.cols (status_code);
+
+
+CREATE TABLE %(macrostrat_schema)s.col_areas (
+  id integer PRIMARY KEY,
+  col_id integer,
+  col_area geometry,
+  wkt text
+);
+
+COPY %(macrostrat_schema)s.col_areas FROM %(col_areas_path)s NULL '\N' DELIMITER ',' CSV;
+
+UPDATE %(macrostrat_schema)s.col_areas SET col_area = ST_GeomFromText(wkt);
+
+CREATE INDEX ON %(macrostrat_schema)s.col_areas (col_id);
+CREATE INDEX ON %(macrostrat_schema)s.col_areas USING GIST (col_area);
+
+
+ALTER TABLE %(macrostrat_schema)s.cols ADD COLUMN poly_geom geometry;
+UPDATE %(macrostrat_schema)s.cols AS c
+SET poly_geom = a.col_area
+FROM %(macrostrat_schema)s.col_areas a
+WHERE c.id = a.col_id;
+
+CREATE INDEX ON %(macrostrat_schema)s.cols USING GIST (poly_geom);
+
 """, params)
 pg_conn.commit()
 
@@ -247,6 +312,8 @@ pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.intervals;", {"macrostrat_s
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.lookup_unit_intervals;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.units;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.lookup_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.cols;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.col_areas;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_conn.commit()
 
 subprocess.call("rm *.csv", shell=True)
