@@ -9,9 +9,11 @@ Update this first. Everything else depends on it.
 2. Dump ````unit_strat_names````, ````strat_names````, ````units_sections````, ````intervals````, ````lookup_unit_intervals````, ````units````, and ````lookup_strat_names```` from MySQL to CSVs
 3. Set permissions to ````777```` on all dumped CSVs
 4. Drop and recreate the schema ````new_macrostrat```` from Postgres
-5. Import all of the above tables into Postgres
+5. Import all of the above tables into Postgres, building appropriate indices along the way.
 6. ````VACUUM ANALYZE```` all imported tables
 7. Delete all CSVs
+
+The Postgres version of Macrostrat is as true to the MySQL version as possible, data types and indices included. **NB:** one major difference is that the table ````cols```` contains an additional field ````poly_geom```` that contains the geometry from ````col_areas.col_area````. It is simply a convinience.
 
 ## match
 First pass at matching GMUS polygons to Macrostrat units
