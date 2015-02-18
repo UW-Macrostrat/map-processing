@@ -6,7 +6,7 @@ import csv
 sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
 import credentials
 
-conn = psycopg2.connect(dbname='geomacro', user=credentials.pg_user, host=credentials.pg_host, port=credentials.pg_host)
+conn = psycopg2.connect(dbname=credentials.pg_db, user=credentials.pg_user, host=credentials.pg_host, port=credentials.pg_host)
 cur = conn.cursor()
 
 cwd = '/Users/john/Downloads/gmus/csvs'

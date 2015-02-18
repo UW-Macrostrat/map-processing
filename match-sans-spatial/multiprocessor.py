@@ -1,6 +1,7 @@
 # Adapted/borrowed from http://stackoverflow.com/a/7556042/1956065
 import multiprocessing
 import psycopg2
+from psycopg2.extensions import AsIs
 import sys
 import os
 
@@ -52,16 +53,16 @@ class Task(object):
                 FROM gmus.geologic_units_with_intervals
                 WHERE unit_link NOT IN (SELECT DISTINCT unit_link FROM gmus.geounits_macrounits_redo)),
               macro AS (SELECT null AS unit_id, lsn.""" + self.rank + """_id AS strat_name_id, lsn.""" + self.rank + """_name AS strat_name
-                 FROM new_macrostrat.units_sections us
-                 JOIN new_macrostrat.unit_strat_names usn ON us.unit_id = usn.unit_id
-                 JOIN new_macrostrat.lookup_strat_names lsn ON usn.strat_name_id = lsn.strat_name_id
+                 FROM %(macrostrat_schema)s.units_sections us
+                 JOIN %(macrostrat_schema)s.unit_strat_names usn ON us.unit_id = usn.unit_id
+                 JOIN %(macrostrat_schema)s.lookup_strat_names lsn ON usn.strat_name_id = lsn.strat_name_id
                  JOIN macrostrat.cols c ON us.col_id = c.id
                  WHERE c.status_code = 'active'
               )
          SELECT DISTINCT ON (gmus.gid, strat_name_id, unit_link) gmus.gid, macro.unit_id, macro.strat_name_id, gmus.unit_link, """ + str(self.type) + """ AS type FROM gmus, macro
          WHERE strat_name != '' AND gmus.unit_text ~* concat('\y', macro.strat_name, '\y')
       )
-    """)
+    """, {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
     pyConn.commit()
 
     print "-- DONE WITH ", self.rank, " - ", self.gmus_field, " --"

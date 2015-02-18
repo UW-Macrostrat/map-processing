@@ -2,16 +2,18 @@ import MySQLdb
 import MySQLdb.cursors
 import os
 import psycopg2
+from psycopg2.extensions import AsIs
 import sys
 import subprocess
-from credentials import *
+import credentials
+
 
 # Connect to Postgres
-pg_conn = psycopg2.connect(dbname=pg_db, user=pg_user, host=pg_host, port=pg_port)
+pg_conn = psycopg2.connect(dbname=credentials.pg_db, user=credentials.pg_user, host=credentials.pg_host, port=credentials.pg_port)
 pg_cur = pg_conn.cursor()
 
 # Connect to MySQL
-my_conn = MySQLdb.connect(host=mysql_host, user=mysql_user, passwd=mysql_passwd, db=mysql_db, unix_socket=mysql_socket, cursorclass=MySQLdb.cursors.DictCursor)
+my_conn = MySQLdb.connect(host=credentials.mysql_host, user=credentials.mysql_user, passwd=credentials.mysql_passwd, db=credentials.mysql_db, unix_socket=credentials.mysql_socket, cursorclass=MySQLdb.cursors.DictCursor)
 my_cur = my_conn.cursor()
 
 subprocess.call("rm *.csv", shell=True)
@@ -25,7 +27,8 @@ params = {
   "intervals_path": directory + "/intervals.csv",
   "lookup_unit_intervals_path": directory + "/lookup_unit_intervals.csv",
   "units_path": directory + "/units.csv",
-  "lookup_strat_names_path": directory + "/lookup_strat_names.csv"
+  "lookup_strat_names_path": directory + "/lookup_strat_names.csv",
+  "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)
 }
 
 print "(1 of 4)   Dumping from MySQL"
@@ -84,24 +87,24 @@ print "(2 of 4)   Importing into Postgres"
 
 pg_cur.execute(""" 
 
-DROP SCHEMA IF EXISTS new_macrostrat cascade;
+DROP SCHEMA IF EXISTS %(macrostrat_schema)s cascade;
 
-CREATE SCHEMA new_macrostrat;
+CREATE SCHEMA %(macrostrat_schema)s;
 
-CREATE TABLE new_macrostrat.unit_strat_names (
+CREATE TABLE %(macrostrat_schema)s.unit_strat_names (
   id serial PRIMARY KEY NOT NULL,
   unit_id integer NOT NULL,
   strat_name_id integer NOT NULL
 );
 
-COPY new_macrostrat.unit_strat_names FROM %(unit_strat_names_path)s DELIMITER ',' CSV;
+COPY %(macrostrat_schema)s.unit_strat_names FROM %(unit_strat_names_path)s DELIMITER ',' CSV;
 
-CREATE INDEX ON new_macrostrat.unit_strat_names (id);
-CREATE INDEX ON new_macrostrat.unit_strat_names (unit_id);
-CREATE INDEX ON new_macrostrat.unit_strat_names (strat_name_id);
+CREATE INDEX ON %(macrostrat_schema)s.unit_strat_names (id);
+CREATE INDEX ON %(macrostrat_schema)s.unit_strat_names (unit_id);
+CREATE INDEX ON %(macrostrat_schema)s.unit_strat_names (strat_name_id);
 
 
-CREATE TABLE new_macrostrat.strat_names (
+CREATE TABLE %(macrostrat_schema)s.strat_names (
   id serial PRIMARY KEY NOT NULL,
   strat_name character varying(100) NOT NULL,
   rank character varying(50),
@@ -109,24 +112,24 @@ CREATE TABLE new_macrostrat.strat_names (
 );
 
 
-COPY new_macrostrat.strat_names FROM %(strat_names_path)s DELIMITER ',' CSV;
+COPY %(macrostrat_schema)s.strat_names FROM %(strat_names_path)s DELIMITER ',' CSV;
 
-CREATE TABLE new_macrostrat.units_sections (
+CREATE TABLE %(macrostrat_schema)s.units_sections (
   id serial PRIMARY KEY NOT NULL,
   unit_id integer NOT NULL,
   section_id integer NOT NULL,
   col_id integer NOT NULL
 );
 
-COPY new_macrostrat.units_sections FROM %(units_sections_path)s DELIMITER ',' CSV;
+COPY %(macrostrat_schema)s.units_sections FROM %(units_sections_path)s DELIMITER ',' CSV;
 
 
-CREATE INDEX ON new_macrostrat.units_sections (id);
-CREATE INDEX ON new_macrostrat.units_sections (unit_id);
-CREATE INDEX ON new_macrostrat.units_sections (section_id);
-CREATE INDEX ON new_macrostrat.units_sections (col_id);
+CREATE INDEX ON %(macrostrat_schema)s.units_sections (id);
+CREATE INDEX ON %(macrostrat_schema)s.units_sections (unit_id);
+CREATE INDEX ON %(macrostrat_schema)s.units_sections (section_id);
+CREATE INDEX ON %(macrostrat_schema)s.units_sections (col_id);
 
-CREATE TABLE new_macrostrat.intervals (
+CREATE TABLE %(macrostrat_schema)s.intervals (
   id serial PRIMARY KEY NOT NULL,
   age_bottom numeric NOT NULL,
   age_top numeric NOT NULL,
@@ -136,17 +139,17 @@ CREATE TABLE new_macrostrat.intervals (
   interval_color character varying(20)
 );
 
-COPY new_macrostrat.intervals FROM %(intervals_path)s DELIMITER ',' CSV;
+COPY %(macrostrat_schema)s.intervals FROM %(intervals_path)s DELIMITER ',' CSV;
 
 
-CREATE INDEX ON new_macrostrat.intervals (id);
-CREATE INDEX ON new_macrostrat.intervals (age_top);
-CREATE INDEX ON new_macrostrat.intervals (age_bottom);
-CREATE INDEX ON new_macrostrat.intervals (interval_type);
-CREATE INDEX ON new_macrostrat.intervals (interval_name);
+CREATE INDEX ON %(macrostrat_schema)s.intervals (id);
+CREATE INDEX ON %(macrostrat_schema)s.intervals (age_top);
+CREATE INDEX ON %(macrostrat_schema)s.intervals (age_bottom);
+CREATE INDEX ON %(macrostrat_schema)s.intervals (interval_type);
+CREATE INDEX ON %(macrostrat_schema)s.intervals (interval_name);
 
 
-CREATE TABLE new_macrostrat.lookup_unit_intervals (
+CREATE TABLE %(macrostrat_schema)s.lookup_unit_intervals (
   unit_id integer,
   FO_age numeric,
   b_age numeric,
@@ -168,12 +171,12 @@ CREATE TABLE new_macrostrat.lookup_unit_intervals (
   eon_id integer
 );
 
-COPY new_macrostrat.lookup_unit_intervals FROM %(lookup_unit_intervals_path)s DELIMITER ',' CSV;
+COPY %(macrostrat_schema)s.lookup_unit_intervals FROM %(lookup_unit_intervals_path)s DELIMITER ',' CSV;
 
-CREATE INDEX ON new_macrostrat.lookup_unit_intervals (unit_id);
+CREATE INDEX ON %(macrostrat_schema)s.lookup_unit_intervals (unit_id);
 
 
-CREATE TABLE new_macrostrat.units (
+CREATE TABLE %(macrostrat_schema)s.units (
   id integer PRIMARY KEY,
   strat_name character varying(150),
   color character varying(20),
@@ -190,17 +193,17 @@ CREATE TABLE new_macrostrat.units (
   col_id integer
 );
 
-COPY new_macrostrat.units FROM %(units_path)s DELIMITER ',' CSV;
+COPY %(macrostrat_schema)s.units FROM %(units_path)s DELIMITER ',' CSV;
 
 
-CREATE INDEX ON new_macrostrat.units (id);
-CREATE INDEX ON new_macrostrat.units (section_id);
-CREATE INDEX ON new_macrostrat.units (col_id);
-CREATE INDEX ON new_macrostrat.units (strat_name);
-CREATE INDEX ON new_macrostrat.units (color);
+CREATE INDEX ON %(macrostrat_schema)s.units (id);
+CREATE INDEX ON %(macrostrat_schema)s.units (section_id);
+CREATE INDEX ON %(macrostrat_schema)s.units (col_id);
+CREATE INDEX ON %(macrostrat_schema)s.units (strat_name);
+CREATE INDEX ON %(macrostrat_schema)s.units (color);
 
 
-CREATE TABLE new_macrostrat.lookup_strat_names (
+CREATE TABLE %(macrostrat_schema)s.lookup_strat_names (
   strat_name_id integer,
   strat_name character varying(100),
   rank character varying(20),
@@ -220,16 +223,16 @@ CREATE TABLE new_macrostrat.lookup_strat_names (
   gsc_lexicon character varying(20)
 );
 
-COPY new_macrostrat.lookup_strat_names FROM %(lookup_strat_names_path)s NULL '\N' DELIMITER ',' CSV;
+COPY %(macrostrat_schema)s.lookup_strat_names FROM %(lookup_strat_names_path)s NULL '\N' DELIMITER ',' CSV;
 
 
-CREATE INDEX ON new_macrostrat.lookup_strat_names (strat_name_id);
-CREATE INDEX ON new_macrostrat.lookup_strat_names (bed_id);
-CREATE INDEX ON new_macrostrat.lookup_strat_names (mbr_id);
-CREATE INDEX ON new_macrostrat.lookup_strat_names (fm_id);
-CREATE INDEX ON new_macrostrat.lookup_strat_names (gp_id);
-CREATE INDEX ON new_macrostrat.lookup_strat_names (sgp_id);
-CREATE INDEX ON new_macrostrat.lookup_strat_names (strat_name);
+CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (strat_name_id);
+CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (bed_id);
+CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (mbr_id);
+CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (fm_id);
+CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (gp_id);
+CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (sgp_id);
+CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (strat_name);
 
 """, params)
 pg_conn.commit()
@@ -237,13 +240,13 @@ pg_conn.commit()
 
 print "(3 of 4)   Vacuuming Postgres"
 pg_conn.set_isolation_level(0)
-pg_cur.execute("VACUUM ANALYZE new_macrostrat.strat_names;")
-pg_cur.execute("VACUUM ANALYZE new_macrostrat.unit_strat_names;")
-pg_cur.execute("VACUUM ANALYZE new_macrostrat.units_sections;")
-pg_cur.execute("VACUUM ANALYZE new_macrostrat.intervals;")
-pg_cur.execute("VACUUM ANALYZE new_macrostrat.lookup_unit_intervals;")
-pg_cur.execute("VACUUM ANALYZE new_macrostrat.units;")
-pg_cur.execute("VACUUM ANALYZE new_macrostrat.lookup_strat_names;")
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.unit_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.units_sections;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.intervals;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.lookup_unit_intervals;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.units;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.lookup_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_conn.commit()
 
 subprocess.call("rm *.csv", shell=True)

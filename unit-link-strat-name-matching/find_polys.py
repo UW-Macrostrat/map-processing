@@ -1,5 +1,6 @@
 import csv
 import psycopg2
+from psycopg2.extensions import AsIs
 import sys
 import os
 
@@ -20,9 +21,9 @@ with open("matches.txt", "rb") as input_file :
         INSERT INTO gmus.geounits_macrounits_redo (geologic_unit_gid, unit_id, strat_name_id, unit_link, type) (
           WITH units AS (
              SELECT us.id AS unit_id, lsn.fm_id AS strat_name_id, lsn.fm_name AS strat_name, c.the_geom_voronoi
-             FROM new_macrostrat.units_sections us
-             JOIN new_macrostrat.unit_strat_names usn ON us.unit_id = usn.unit_id
-             JOIN new_macrostrat.lookup_strat_names lsn ON usn.strat_name_id = lsn.strat_name_id
+             FROM %(macrostrat_schema)s.units_sections us
+             JOIN %(macrostrat_schema)s.unit_strat_names usn ON us.unit_id = usn.unit_id
+             JOIN %(macrostrat_schema)s.lookup_strat_names lsn ON usn.strat_name_id = lsn.strat_name_id
              JOIN macrostrat.cols c ON us.col_id = c.id
              WHERE c.status_code = 'active' AND lsn.strat_name_id = %(strat_name_id)s
           ), 
@@ -40,7 +41,7 @@ with open("matches.txt", "rb") as input_file :
           WHERE distance.distance = min_dist.distance
         )
         
-      """, {"strat_name_id": row[1], "unit_link": row[0]})
+      """, {"strat_name_id": row[1], "unit_link": row[0], "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema) })
       
       conn.commit()
       print row[0], " - ", row[1]
