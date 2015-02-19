@@ -6,10 +6,10 @@ import csv
 sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
 import credentials
 
-conn = psycopg2.connect(dbname=credentials.pg_db, user=credentials.pg_user, host=credentials.pg_host, port=credentials.pg_host)
+conn = psycopg2.connect(dbname=credentials.pg_db, user=credentials.pg_user, host=credentials.pg_host, port=credentials.pg_port)
 cur = conn.cursor()
 
-cwd = '/Users/john/Downloads/gmus/csvs'
+cwd = os.getcwd() + '/csvs'
 files = [ f for f in os.listdir(cwd) if os.path.isfile(os.path.join(cwd,f)) and not f.startswith('.') ]
 
 def fix_row(total_rows, row) :
