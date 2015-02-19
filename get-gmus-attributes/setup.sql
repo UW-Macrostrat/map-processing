@@ -24,7 +24,8 @@ CREATE TABLE gmus.ages (
   min_ma numeric,
   max_ma numeric,
   age_type text,
-  age_com text
+  age_com text,
+  macro_interval integer
 );
 
 

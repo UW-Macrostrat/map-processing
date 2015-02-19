@@ -38,3 +38,9 @@ Second pass at matching GMUS polygons to Macrostrat. Ignores all GMUS polygons a
 5. Run ````setup.sql```` on the database ````geomacro````. This drops and recreates the tables ````gmus.ages````, ````gmus.liths````, ````gmus.reflinks````, ````gmus.refs````, and ````gmus.units````.
 6. Run ````import.py````. This script cleans up the contents of each CSV file and inserts the cleaned data into Postgres.
 7. Run ````fix_text.py````. Because some of the long text fields from the CSVs are truncated prematurely, we use the existing ````unit_link````s to get the "same" data from the USGS JSON service. For each ````unit_link````, we re-record the ````unit_name````, ````unitdesc````, ````unit_com````, and ````strat_unit```` in the respective ````new_X```` field in ````gmus.units````.
+
+
+## gmus-unitlinks-to-macrostrat-intervals
+Fills the column ````macro_interval```` in the table ````gmus.ages```` by matching the midpoint of the finest GMUS time intervals available for a given ````unit_link```` to a Macrostrat time interval. This allows us to join GMUS polygons to ````macrostrat.intervals```` in order to properly color polyons / find more accurate ages. **This will become less important once we have Macrostrat units directly keyed into GMUS polygon gids via the geounits_macrounits table.**
+
+This should be run after both GMUS and Macrostrat data has been imported. 

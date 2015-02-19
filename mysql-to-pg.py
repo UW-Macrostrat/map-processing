@@ -144,17 +144,28 @@ CREATE INDEX ON %(macrostrat_schema)s.units_sections (section_id);
 CREATE INDEX ON %(macrostrat_schema)s.units_sections (col_id);
 
 CREATE TABLE %(macrostrat_schema)s.intervals (
-  id serial PRIMARY KEY NOT NULL,
-  age_bottom numeric NOT NULL,
-  age_top numeric NOT NULL,
+  id serial NOT NULL,
+  age_bottom numeric,
+  age_top numeric,
   interval_name character varying(200),
   interval_abbrev character varying(50),
   interval_type character varying(50),
   interval_color character varying(20)
 );
 
-COPY %(macrostrat_schema)s.intervals FROM %(intervals_path)s DELIMITER ',' CSV;
+COPY %(macrostrat_schema)s.intervals FROM %(intervals_path)s NULL '\N' DELIMITER ',' CSV;
 
+ALTER TABLE %(macrostrat_schema)s.intervals ADD COLUMN rank integer DEFAULT NULL;
+ALTER TABLE %(macrostrat_schema)s.intervals ADD COLUMN macro_interval integer DEFAULT NULL;
+INSERT INTO %(macrostrat_schema)s.intervals (id, interval_name, interval_color) VALUES (0, 'Age Unknown', '#737373'), (0, 'Unknown', '#737373');
+
+UPDATE %(macrostrat_schema)s.intervals SET rank = 6 WHERE interval_type = 'age';
+UPDATE %(macrostrat_schema)s.intervals SET rank = 5 WHERE interval_type = 'epoch';
+UPDATE %(macrostrat_schema)s.intervals SET rank = 4 WHERE interval_type = 'period';
+UPDATE %(macrostrat_schema)s.intervals SET rank = 3 WHERE interval_type = 'era';
+UPDATE %(macrostrat_schema)s.intervals SET rank = 2 WHERE interval_type = 'eon';
+UPDATE %(macrostrat_schema)s.intervals SET rank = 1 WHERE interval_type = 'supereon';
+UPDATE %(macrostrat_schema)s.intervals SET rank = 0 WHERE rank IS NULL;
 
 CREATE INDEX ON %(macrostrat_schema)s.intervals (id);
 CREATE INDEX ON %(macrostrat_schema)s.intervals (age_top);
@@ -185,7 +196,7 @@ CREATE TABLE %(macrostrat_schema)s.lookup_unit_intervals (
   eon_id integer
 );
 
-COPY %(macrostrat_schema)s.lookup_unit_intervals FROM %(lookup_unit_intervals_path)s DELIMITER ',' CSV;
+COPY %(macrostrat_schema)s.lookup_unit_intervals FROM %(lookup_unit_intervals_path)s NULL '\N' DELIMITER ',' CSV;
 
 CREATE INDEX ON %(macrostrat_schema)s.lookup_unit_intervals (unit_id);
 
