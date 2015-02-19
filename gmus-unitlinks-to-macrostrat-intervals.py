@@ -6,7 +6,7 @@ import credentials
 
 def is_valid(interval) :
   interval = replace_precam(interval)
-  if (interval is not None) and (len(interval) > 1) and (interval in interval_lookup):
+  if (interval is not None) and (len(interval) > 1) and ((interval in interval_lookup) or (' '.join(fix_parts(interval.split("-"))) in interval_lookup)):
     return True
   else :
     return False
@@ -111,6 +111,7 @@ for i, unit in enumerate(units):
     print "skipping ", unit
     #break
   else :'''
+
   # Check for min_age
   if is_valid(unit[1]) :
     min_interval = unit[1]
@@ -150,9 +151,11 @@ for i, unit in enumerate(units):
   except NameError:
     print "MIN OR MAX_INTERVAL NOT DEFINED ", unit
 
+
   else :
     if min_interval == max_interval :
       if "-" in min_interval:
+
         parts = fix_parts(min_interval.split("-"))
         if (parts[0] == "Early") or (parts[0] == "Late") or (parts[0] == "Middle") :
           try:
