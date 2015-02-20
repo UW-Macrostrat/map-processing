@@ -4,6 +4,12 @@ import sys, os
 
 import credentials
 
+'''
+alter table gmna.geologic_units add column macro_containing_interval_id integer;
+alter table gmna.geologic_units add column macro_min_interval_id integer;
+alter table gmna.geologic_units add column macro_max_interval_id integer;
+'''
+
 def is_valid(interval) :
   interval = replace_precam(interval)
   if (interval is not None) and (len(interval) > 1) and ((interval in interval_lookup) or (' '.join(fix_parts(interval.split("-"))) in interval_lookup)):
@@ -22,7 +28,7 @@ def replace_precam(interval) :
   else :
     return interval
 
-def parse_range(min_interval, max_interval, unit_link):
+def parse_range(min_interval, max_interval, gid):
   min_interval = replace_precam(min_interval)
   max_interval = replace_precam(max_interval)
 
@@ -47,8 +53,14 @@ def parse_range(min_interval, max_interval, unit_link):
     if max_interval.split(" ")[0] == "Late" :
       max_interval = "Upper " + max_interval.split(" ")[1]
       age_bottom = interval_lookup[max_interval][1]
+    elif max_interval.split(" ")[0] == "Upper" :
+      max_interval = "Late " + max_interval.split(" ")[1]
+      age_bottom = interval_lookup[max_interval][1]
     elif max_interval.split(" ")[0] == "Early" :
       max_interval = "Lower " + max_interval.split(" ")[1]
+      age_bottom = interval_lookup[max_interval][1]
+    elif max_interval.split(" ")[0] == "Lower" :
+      max_interval = "Early " + max_interval.split(" ")[1]
       age_bottom = interval_lookup[max_interval][1]
     elif max_interval == "preCambrian" :
       age_bottom = interval_lookup["Precambrian"][1]
@@ -61,8 +73,17 @@ def parse_range(min_interval, max_interval, unit_link):
     if min_interval.split(" ")[0] == "Late" :
       min_interval = "Upper " + min_interval.split(" ")[1]
       age_top = interval_lookup[min_interval][2]
+
+    elif min_interval.split(" ")[0] == "Upper" :
+      min_interval = "Late " + min_interval.split(" ")[1]
+      age_top = interval_lookup[min_interval][2]
+
     elif min_interval.split(" ")[0] == "Early" :
       min_interval = "Lower " + min_interval.split(" ")[1]
+      age_top = interval_lookup[min_interval][2]
+
+    elif min_interval.split(" ")[0] == "Lower" :
+      min_interval = "Early " + min_interval.split(" ")[1]
       age_top = interval_lookup[min_interval][2]
     elif min_interval == "preCambrian" :
       age_top = interval_lookup["Precambrian"][2]
@@ -75,13 +96,13 @@ def parse_range(min_interval, max_interval, unit_link):
   cur.execute("SELECT id, interval_name, interval_color FROM macrostrat.intervals WHERE age_bottom >= %s AND age_top <= %s ORDER BY rank DESC LIMIT 1", [age_bottom, age_top])
   match = cur.fetchall()
   if len(match) > 0:
-    update(match[0][0], min_interval_id, max_interval_id, unit_link)
+    update(match[0][0], min_interval_id, max_interval_id, gid)
   else :
     print str(unit_link) + "\r"
 
-def update(containing_interval_id, min_interval_id, max_interval_id, unit_link) :
+def update(containing_interval_id, min_interval_id, max_interval_id, gid) :
   #print "UPDATING ", unit_link, " - ", interval_id
-  cur.execute("UPDATE gmus.ages SET macro_containing_interval_id = %s, macro_min_interval_id = %s, macro_max_interval_id = %s WHERE unit_link = %s", [containing_interval_id, min_interval_id, max_interval_id, unit_link])
+  cur.execute("UPDATE gmna.geologic_units SET macro_containing_interval_id = %s, macro_min_interval_id = %s, macro_max_interval_id = %s WHERE gid = %s", [containing_interval_id, min_interval_id, max_interval_id, gid])
   conn.commit()
 
 # Connect to the database
@@ -101,8 +122,8 @@ interval_lookup = {}
 for i, interval in enumerate(intervals):
   interval_lookup[interval[3]] = interval
 
-#cur.execute("select gid, unit_link, min_age, max_age, min_era, max_era, min_eon, max_eon, min_period, max_period, min_epoch, max_epoch from gmus where color is null")
-cur.execute("select unit_link, min_age, max_age, min_era, max_era, min_eon, max_eon, min_period, max_period, min_epoch, max_epoch from gmus.ages")
+
+cur.execute("select gid, min_age, max_age FROM gmna.geologic_units")
 units = cur.fetchall()
 
 total = len(units)
@@ -110,47 +131,13 @@ for i, unit in enumerate(units):
   sys.stdout.write("\r" + str(i) + " of " + str(total))
   sys.stdout.flush()
 
-  '''if (unit[2] is None) or (unit[3] is None):
-    print "skipping ", unit
-    #break
-  else :'''
-
-  # Check for min_age
-  if is_valid(unit[1]) :
-    min_interval = unit[1]
-  # min_epoch
-  elif is_valid(unit[9]) :
-    min_interval = unit[9]
-  # min_period
-  elif is_valid(unit[7]) :
-    min_interval = unit[7]
-  # min era
-  elif is_valid(unit[3]) :
-    min_interval = unit[3]
-  # min eon
-  elif is_valid(unit[5]) :
-    min_interval = unit[5]
-
-
-  # Check for max_age
-  if is_valid(unit[2]) :
-    max_interval = unit[2]
-  # max_epoch
-  elif is_valid(unit[10]) :
-    max_interval = unit[10]
-  # max_period
-  elif is_valid(unit[8]) :
-    max_interval = unit[8]
-  # max era
-  elif is_valid(unit[4]) :
-    max_interval = unit[4]
-  # max eon
-  elif is_valid(unit[6]) :
-    max_interval = unit[6]
+  min_interval = unit[1]
+  max_interval = unit[2]
 
   try :
     max_interval
     min_interval
+
   except NameError:
     print "MIN OR MAX_INTERVAL NOT DEFINED ", unit
 
@@ -175,10 +162,14 @@ for i, unit in enumerate(units):
       else:
         try:
           int_id = interval_lookup[replace_precam(min_interval)][0]
+
+          update(int_id, int_id, int_id, unit[0])
         except:
+
+          parse_range(min_interval, min_interval, unit[0])
           print "EQUIVALENCY FUCK UP ", min_interval
 
-        update(int_id, int_id, int_id, unit[0])
+        
 
     else :
       parse_range(min_interval, max_interval, unit[0])

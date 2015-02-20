@@ -156,7 +156,7 @@ CREATE TABLE %(macrostrat_schema)s.intervals (
 COPY %(macrostrat_schema)s.intervals FROM %(intervals_path)s NULL '\N' DELIMITER ',' CSV;
 
 ALTER TABLE %(macrostrat_schema)s.intervals ADD COLUMN rank integer DEFAULT NULL;
-ALTER TABLE %(macrostrat_schema)s.intervals ADD COLUMN macro_interval integer DEFAULT NULL;
+
 INSERT INTO %(macrostrat_schema)s.intervals (id, interval_name, interval_color) VALUES (0, 'Age Unknown', '#737373'), (0, 'Unknown', '#737373');
 
 UPDATE %(macrostrat_schema)s.intervals SET rank = 6 WHERE interval_type = 'age';

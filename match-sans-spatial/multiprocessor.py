@@ -48,10 +48,10 @@ class Task(object):
     
     
     pyCursor1.execute("""
-      INSERT INTO gmus.geounits_macrounits_redo (geologic_unit_gid, unit_id, strat_name_id, unit_link, type) (
+      INSERT INTO gmus.%(pg_geounits_macrounits)s (geologic_unit_gid, unit_id, strat_name_id, unit_link, type) (
          WITH gmus AS (SELECT gid, unit_link, """ + self.gmus_field + """ AS unit_text
                 FROM gmus.geologic_units_with_intervals
-                WHERE unit_link NOT IN (SELECT DISTINCT unit_link FROM gmus.geounits_macrounits_redo)),
+                WHERE unit_link NOT IN (SELECT DISTINCT unit_link FROM gmus.%(pg_geounits_macrounits)s)),
               macro AS (SELECT null AS unit_id, lsn.""" + self.rank + """_id AS strat_name_id, lsn.""" + self.rank + """_name AS strat_name
                  FROM %(macrostrat_schema)s.units_sections us
                  JOIN %(macrostrat_schema)s.unit_strat_names usn ON us.unit_id = usn.unit_id
@@ -62,7 +62,7 @@ class Task(object):
          SELECT DISTINCT ON (gmus.gid, strat_name_id, unit_link) gmus.gid, macro.unit_id, macro.strat_name_id, gmus.unit_link, """ + str(self.type) + """ AS type FROM gmus, macro
          WHERE strat_name != '' AND gmus.unit_text ~* concat('\y', macro.strat_name, '\y')
       )
-    """, {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+    """, {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema), "pg_geounits_macrounits": credentials.pg_geounits_macrounits})
     pyConn.commit()
 
     print "-- DONE WITH ", self.rank, " - ", self.gmus_field, " --"

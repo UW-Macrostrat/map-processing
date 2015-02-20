@@ -103,5 +103,31 @@ for dataset in files :
       cur.execute("COPY gmus." + table + " " + fields + " FROM '" + new_file + "' NULL '\N' QUOTE '\"' CSV HEADER")
       conn.commit()
       os.remove(new_file)
-      print table, new_file   
+      print table, new_file
+
+
+cur.execute("""
+  CREATE INDEX ON gmus.ages (id);
+  CREATE INDEX ON gmus.ages (unit_link);
+  CREATE INDEX ON gmus.ages (macro_containing_interval_id);
+  CREATE INDEX ON gmus.ages (macro_min_interval_id);
+  CREATE INDEX ON gmus.ages (macro_max_interval_id);
+
+  CREATE INDEX ON gmus.liths (id);
+  CREATE INDEX ON gmus.liths (unit_link);
+
+  CREATE INDEX ON gmus.reflinks (id);
+  CREATE INDEX ON gmus.reflinks (unit_link);
+  CREATE INDEX ON gmus.reflinks (ref_id);
+
+  CREATE INDEX ON gmus.reflinks (id);
+  CREATE INDEX ON gmus.reflinks (ref_id);
+
+  CREATE INDEX ON gmus.units (id);
+  CREATE INDEX ON gmus.units (state);
+  CREATE INDEX ON gmus.units (unit_link);
+  CREATE INDEX ON gmus.units (unit_ref);
+""")
+
+conn.commit()
 

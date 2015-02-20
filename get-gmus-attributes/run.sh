@@ -56,6 +56,5 @@ psql geomacro < setup.sql
 
 python import.py
 python fix_text.py
-
-
+python best_attributes.py
 

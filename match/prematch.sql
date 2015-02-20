@@ -8,32 +8,42 @@ INSERT INTO gmus.geounits_macrounits_types (id, type) VALUES
 (1, 'mbr_name-unit_name'), 
 (2, 'fm_name-unit_name'),
 (3, 'gp_name-unit_name'), 
-(4, 'sgp_name-unit_name'), 
+(4, 'sgp_name-unit_name'),
 
-(5, 'mbr_name-unitdesc'),
-(6, 'fm_name-unitdesc'),
-(7, 'gp_name-unitdesc'),
-(8, 'sgp_name-unitdesc'),
+(5, 'mbr_name-strat_unit'), 
+(6, 'fm_name-strat_unit'),
+(7, 'gp_name-strat_unit'), 
+(8, 'sgp_name-strat_unit'), 
 
-(9, 'mbr_name-unit_com'),
-(10, 'fm_name-unit_com'),
-(11, 'gp_name-unit_com'),
-(12, 'sgp_name-unit_com'),
+(9, 'mbr_name-unitdesc'),
+(10, 'fm_name-unitdesc'),
+(11, 'gp_name-unitdesc'),
+(12, 'sgp_name-unitdesc'),
 
-(13, 'ns-mbr_name-unit_name'), 
-(14, 'ns-fm_name-unit_name'),
-(15, 'ns-gp_name-unit_name'), 
-(16, 'ns-sgp_name-unit_name'), 
+(13, 'mbr_name-unit_com'),
+(14, 'fm_name-unit_com'),
+(15, 'gp_name-unit_com'),
+(16, 'sgp_name-unit_com'),
 
-(17, 'ns-mbr_name-unitdesc'),
-(18, 'ns-fm_name-unitdesc'),
-(19, 'ns-gp_name-unitdesc'),
-(20, 'ns-sgp_name-unitdesc'),
+(17, 'ns-mbr_name-unit_name'), 
+(18, 'ns-fm_name-unit_name'),
+(19, 'ns-gp_name-unit_name'), 
+(20, 'ns-sgp_name-unit_name'), 
 
-(21, 'ns-mbr_name-unit_com'),
-(22, 'ns-fm_name-unit_com'),
-(23, 'ns-gp_name-unit_com'),
-(24, 'ns-sgp_name-unit_com');
+(21, 'ns-mbr_name-strat_unit'), 
+(22, 'ns-fm_name-strat_unit'),
+(23, 'ns-gp_name-strat_unit'), 
+(24, 'ns-sgp_name-strat_unit'), 
+
+(25, 'ns-mbr_name-unitdesc'),
+(26, 'ns-fm_name-unitdesc'),
+(27, 'ns-gp_name-unitdesc'),
+(28, 'ns-sgp_name-unitdesc'),
+
+(29, 'ns-mbr_name-unit_com'),
+(30, 'ns-fm_name-unit_com'),
+(31, 'ns-gp_name-unit_com'),
+(32, 'ns-sgp_name-unit_com');
 
 DROP TABLE IF EXISTS gmus.geounits_macrounits_redo;
 

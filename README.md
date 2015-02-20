@@ -44,3 +44,5 @@ Second pass at matching GMUS polygons to Macrostrat. Ignores all GMUS polygons a
 Fills the column ````macro_interval```` in the table ````gmus.ages```` by matching the midpoint of the finest GMUS time intervals available for a given ````unit_link```` to a Macrostrat time interval. This allows us to join GMUS polygons to ````macrostrat.intervals```` in order to properly color polyons / find more accurate ages. **This will become less important once we have Macrostrat units directly keyed into GMUS polygon gids via the geounits_macrounits table.**
 
 This should be run after both GMUS and Macrostrat data has been imported. 
+
+## gmna-ages-to-macrostrat

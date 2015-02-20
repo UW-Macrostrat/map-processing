@@ -25,7 +25,9 @@ CREATE TABLE gmus.ages (
   max_ma numeric,
   age_type text,
   age_com text,
-  macro_interval integer
+  macro_containing_interval_id integer,
+  macro_min_interval_id integer,
+  macro_max_interval_id integer
 );
 
 
@@ -82,6 +84,11 @@ CREATE TABLE gmus.units (
   new_unit_name text,
   new_unitdesc text,
   new_unit_com text,
-  new_strat_unit text
+  new_strat_unit text,
+
+  best_unit_name text DEFAULT NULL,
+  best_unitdesc text DEFAULT NULL,
+  best_unit_com text DEFAULT NULL,
+  best_strat_unit text DEFAULT NULL
 );
 
