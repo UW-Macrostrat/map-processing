@@ -17,3 +17,10 @@ Temporary Items
 
 *.pyc
 credentials.py
+get-gmus-attributes/csvs
+tmp
+*.shp
+*.dbf
+*.prj
+*.shx
+
