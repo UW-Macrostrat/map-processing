@@ -45,9 +45,9 @@ INSERT INTO gmus.geounits_macrounits_types (id, type) VALUES
 (31, 'ns-gp_name-unit_com'),
 (32, 'ns-sgp_name-unit_com');
 
-DROP TABLE IF EXISTS gmus.geounits_macrounits_redo;
+DROP TABLE IF EXISTS gmus.geounits_macrounits;
 
-CREATE TABLE gmus.geounits_macrounits_redo (
+CREATE TABLE gmus.geounits_macrounits (
   id serial PRIMARY KEY NOT NULL,
   geologic_unit_gid integer NOT NULL,
   unit_id integer NOT NULL,

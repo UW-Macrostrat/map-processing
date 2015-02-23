@@ -18,15 +18,21 @@ if __name__ == '__main__':
   tasks.put(Task(3, "gp", "unit_name"))
   tasks.put(Task(4, "sgp", "unit_name"))
 
-  tasks.put(Task(5, "mbr", "unitdesc"))
-  tasks.put(Task(6, "fm", "unitdesc"))
-  tasks.put(Task(7, "gp", "unitdesc"))
-  tasks.put(Task(8, "sgp", "unitdesc"))
+  tasks.put(Task(5, "mbr", "strat_unit"))
+  tasks.put(Task(6, "fm", "strat_unit"))
+  tasks.put(Task(7, "gp", "strat_unit"))
+  tasks.put(Task(8, "sgp", "strat_unit"))
 
-  tasks.put(Task(9, "mbr", "unit_com"))
-  tasks.put(Task(10, "fm", "unit_com"))
-  tasks.put(Task(11, "gp", "unit_com"))
-  tasks.put(Task(12, "sgp", "unit_com"))
+  tasks.put(Task(9, "mbr", "unitdesc"))
+  tasks.put(Task(10, "fm", "unitdesc"))
+  tasks.put(Task(11, "gp", "unitdesc"))
+  tasks.put(Task(12, "sgp", "unitdesc"))
+
+  tasks.put(Task(13, "mbr", "unit_com"))
+  tasks.put(Task(14, "fm", "unit_com"))
+  tasks.put(Task(15, "gp", "unit_com"))
+  tasks.put(Task(16, "sgp", "unit_com"))
+
 
   for i in range(num_processors):
     tasks.put(None)
