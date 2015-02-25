@@ -5,6 +5,8 @@ import psycopg2
 from psycopg2.extensions import AsIs
 import sys
 import subprocess
+
+sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
 import credentials
 
 
@@ -30,11 +32,12 @@ params = {
   "lookup_strat_names_path": directory + "/lookup_strat_names.csv",
   "cols_path": directory + "/cols.csv",
   "col_areas_path": directory + "/col_areas.csv",
+  "liths_path": directory + "/liths.csv",
+  "lith_atts_path": directory + "/lith_atts.csv",
   "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)
 }
 
-print "(1 of 4)   Dumping from MySQL"
-
+print "(1 of 6)   Dumping from MySQL"
 my_cur.execute("""
 
   SELECT * FROM unit_strat_names
@@ -92,13 +95,24 @@ my_cur.execute("""
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
+  SELECT * FROM liths
+  INTO OUTFILE %(liths_path)s
+  FIELDS TERMINATED BY ','
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n';
+
+  SELECT * FROM lith_atts
+  INTO OUTFILE %(lith_atts_path)s
+  FIELDS TERMINATED BY ','
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n';
 """, params)
 
 
 subprocess.call("chmod 777 *.csv", shell=True)
 
-print "(2 of 4)   Importing into Postgres"
 
+print "(2 of 6)   Importing into Postgres"
 pg_cur.execute(""" 
 
 DROP SCHEMA IF EXISTS %(macrostrat_schema)s cascade;
@@ -279,7 +293,7 @@ CREATE TABLE %(macrostrat_schema)s.cols (
 COPY %(macrostrat_schema)s.cols FROM %(cols_path)s NULL '\N' DELIMITER ',' CSV;
 
 UPDATE %(macrostrat_schema)s.cols SET coordinate = ST_GeomFromText(wkt);
-
+UPDATE %(macrostrat_schema)s.cols SET coordinate = ST_GeomFromText(wkt);
 CREATE INDEX ON %(macrostrat_schema)s.cols (id);
 CREATE INDEX ON %(macrostrat_schema)s.cols (project_id);
 CREATE INDEX ON %(macrostrat_schema)s.cols USING GIST (coordinate);
@@ -308,13 +322,49 @@ SET poly_geom = a.col_area
 FROM %(macrostrat_schema)s.col_areas a
 WHERE c.id = a.col_id;
 
+UPDATE %(macrostrat_schema)s.cols SET poly_geom = ST_SetSRID(poly_geom, 4326);
+
 CREATE INDEX ON %(macrostrat_schema)s.cols USING GIST (poly_geom);
+
+
+CREATE TABLE %(macrostrat_schema)s.liths (
+  id integer PRIMARY KEY NOT NULL,
+  lith character varying(75),
+  lith_type character varying(50),
+  lith_class character varying(50),
+  lith_fill integer,
+  comp_coef numeric,
+  initial_porosity numeric,
+  bulk_density numeric,
+  lith_color character varying(12)
+);
+COPY %(macrostrat_schema)s.liths FROM %(liths_path)s NULL '\N' DELIMITER ',' CSV;
+
+CREATE INDEX ON %(macrostrat_schema)s.liths (id);
+CREATE INDEX ON %(macrostrat_schema)s.liths (lith);
+CREATE INDEX ON %(macrostrat_schema)s.liths (lith_class);
+CREATE INDEX ON %(macrostrat_schema)s.liths (lith_type);
+
+
+CREATE TABLE %(macrostrat_schema)s.lith_atts (
+  id integer PRIMARY KEY NOT NULL,
+  lith_att character varying(75),
+  att_type character varying(25),
+  lith_att_fill integer
+);
+COPY %(macrostrat_schema)s.lith_atts FROM %(lith_atts_path)s NULL '\N' DELIMITER ',' CSV;
+
+CREATE INDEX ON %(macrostrat_schema)s.lith_atts (id);
+CREATE INDEX ON %(macrostrat_schema)s.lith_atts (att_type);
+CREATE INDEX ON %(macrostrat_schema)s.lith_atts (lith_att);
+
+
 
 """, params)
 pg_conn.commit()
 
 
-print "(3 of 4)   Vacuuming Postgres"
+print "(3 of 6)   Vacuuming macrostrat"
 pg_conn.set_isolation_level(0)
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.unit_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
@@ -325,9 +375,66 @@ pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.units;", {"macrostrat_schem
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.lookup_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.cols;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.col_areas;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.liths;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.lith_atts;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_conn.commit()
 
 subprocess.call("rm *.csv", shell=True)
 
-print "(4 of 4)   Done"
+
+print "(4 of 6)   Rebuilding gmna.lookup_units"
+pg_cur.execute("""
+  DROP TABLE IF EXISTS gmna.lookup_units;
+
+  CREATE TABLE gmna.lookup_units AS 
+  SELECT gid, unit_abbre, rocktype, lithology, lith, lith_type, lith_class, lith_color, min.age_top AS min_age, min.interval_name AS min_interval, max.age_bottom AS max_age, max.interval_name AS max_interval, min.interval_name AS containing_interval, mid.interval_color, geom
+  FROM gmna.geologic_units gu
+  JOIN %(macrostrat_schema)s.intervals min ON gu.macro_min_interval_id = min.id
+  JOIN %(macrostrat_schema)s.intervals max ON gu.macro_max_interval_id = max.id
+  JOIN %(macrostrat_schema)s.intervals mid ON gu.macro_containing_interval_id = mid.id
+  JOIN %(macrostrat_schema)s.liths l ON gu.macro_lith_id = l.id;
+
+  CREATE INDEX ON gmna.lookup_units (gid);
+  CREATE INDEX ON gmna.lookup_units (lith_type);
+  CREATE INDEX ON gmna.lookup_units (lith_class);
+  CREATE INDEX ON gmna.lookup_units (min_age);
+  CREATE INDEX ON gmna.lookup_units (max_age);
+  CREATE INDEX ON gmna.lookup_units USING GIST (geom);
+
+""", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_conn.commit()
+
+
+
+print "(5 of 6)   Rebuilding gmus.lookup_units"
+pg_cur.execute("""
+  DROP TABLE IF EXISTS gmus.lookup_units;
+
+  CREATE TABLE gmus.lookup_units AS 
+  SELECT gid, gu.state, gu.unit_link, source, gu.unit_age, gu.rocktype1, gu.rocktype2, new_unit_name AS unit_name, new_unitdesc AS unitdesc, new_strat_unit AS strat_unit, new_unit_com AS unit_com, u.rocktype1 AS u_rocktype1, u.rocktype2 AS u_rocktype2, u.rocktype3 AS u_rocktype3, i.interval_color, i.interval_name, i.age_bottom, i.age_top, a.macro_containing_interval_id AS macro_interval_id, geom
+  FROM gmus.geologic_units gu
+  LEFT JOIN gmus.units u ON gu.unit_link = u.unit_link
+  LEFT JOIN gmus.ages a ON gu.unit_link = a.unit_link
+  LEFT JOIN %(macrostrat_schema)s.intervals i ON a.macro_containing_interval_id = i.id;
+
+  CREATE INDEX ON gmus.lookup_units (gid);
+  CREATE INDEX ON gmus.lookup_units (state);
+  CREATE INDEX ON gmus.lookup_units (unit_link);
+  CREATE INDEX ON gmus.lookup_units (macro_interval_id);
+  CREATE INDEX ON gmus.lookup_units (unit_name);
+  CREATE INDEX ON gmus.lookup_units (age_bottom);
+  CREATE INDEX ON gmus.lookup_units (age_top);
+  CREATE INDEX ON gmus.lookup_units USING GIST (geom);
+
+""", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_conn.commit()
+
+
+print "(6 of 6)   Vacuuming lookup tables"
+pg_cur.execute("VACUUM ANALYZE gmna.lookup_units;")
+pg_cur.execute("VACUUM ANALYZE gmus.lookup_units;")
+pg_conn.commit()
+
+
+print "Done!"
 

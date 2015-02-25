@@ -4,32 +4,36 @@ Various scripts for working between and among GMUS/GMNA and Macrostrat
 ## credentials.py
 Update this first. Everything else depends on it.
 
-## mysql-to-pg.py
+## rebuild
+Rebuilds everything that can/should be easily rebuilt, including the entire ````macrostrat```` schema, ````gmna.lookup_units````, and ````gmus.lookup_units````.
+
+What it does:
+
 1. Delete all CSVs in current folder
-2. Dump ````unit_strat_names````, ````strat_names````, ````units_sections````, ````intervals````, ````lookup_unit_intervals````, ````units````, and ````lookup_strat_names```` from MySQL to CSVs
+2. Dump ````unit_strat_names````, ````strat_names````, ````units_sections````, ````intervals````, ````lookup_unit_intervals````, ````units````, ````lookup_strat_names````, ````cols````, ````col_areas````, ````liths````, and ````lith_atts```` from MySQL to CSVs
 3. Set permissions to ````777```` on all dumped CSVs
-4. Drop and recreate the schema ````new_macrostrat```` from Postgres
+4. Drop and recreate the schema ````macrostrat```` from Postgres
 5. Import all of the above tables into Postgres, building appropriate indices along the way.
 6. ````VACUUM ANALYZE```` all imported tables
 7. Delete all CSVs
+8. Rebuild ````gmna.lookup_units````
+9. Rebuild ````gmus.lookup_units````
 
 The Postgres version of Macrostrat is as true to the MySQL version as possible, data types and indices included. **NB:** one major difference is that the table ````cols```` contains an additional field ````poly_geom```` that contains the geometry from ````col_areas.col_area````. It is simply a convinience.
 
 ## match
-First pass at matching GMUS polygons to Macrostrat units
+Attempts to match GMUS polygons to Macrostrat units on the basis of space, time, and description.
 
-## match-sans-spatial
-Second pass at matching GMUS polygons to Macrostrat. Ignores all GMUS polygons already matched to Macrostrat polygons on the first pass, and attempts to match only on strings
 
-## unit-link-strat-name
+## unit-link-strat-name-matching
 1. Given a list of matched ````unit_link```` and ````strat_name_id```` in ````matches.txt````...
 2. Find all Macrostrat units with the given ````strat_name_id````
 3. Find all GMUS polygons with the given ````unit_link````
 4. Find the distance between each feature in #2 and #3
-5. Create a new match in ````gmus.geounits_macrounits_redo```` between the GMUS unit(s) and Macrostrat unit(s) with the smallest distance between them. Each of these matches will be of ````type```` 99.
+5. Create a new match in ````gmus.geounits_macrounits```` between the GMUS unit(s) and Macrostrat unit(s) with the smallest distance between them. Each of these matches will be of ````type```` 99.
 
 ## get-gmus-attributes
-````run.sh```` is the task runner and excutes the below tasks in one fell swoop
+Get all GMUS attribute data from USGS (both CSVs and JSON), import it into Postgres, and find the best attributes out of each. ````run.sh```` is the task runner and excutes the below tasks in one fell swoop
 
 1. Remove the directory ````csvs```` if it exists
 2. Download all the GMUS CSV data from USGS
@@ -42,8 +46,7 @@ Second pass at matching GMUS polygons to Macrostrat. Ignores all GMUS polygons a
 
 
 ## gmus-unitlinks-to-macrostrat-intervals
-Fills the column ````macro_interval```` in the table ````gmus.ages```` by matching the midpoint of the finest GMUS time intervals available for a given ````unit_link```` to a Macrostrat time interval. This allows us to join GMUS polygons to ````macrostrat.intervals```` in order to properly color polyons / find more accurate ages. **This will become less important once we have Macrostrat units directly keyed into GMUS polygon gids via the geounits_macrounits table.**
+Fills the column ````macro_interval```` in the table ````gmus.ages```` by matching the midpoint of the finest GMUS time intervals available for a given ````unit_link```` to a Macrostrat time interval. This allows us to join ````gmus.geologic_units```` and ````gmus.lookup_units```` to ````macrostrat.intervals```` in order to properly color polyons / find more accurate ages. **This will become less important once we have Macrostrat units directly keyed into GMUS polygon gids via the geounits_macrounits table.**
 
 This should be run after both GMUS and Macrostrat data has been imported. 
 
-## gmna-ages-to-macrostrat

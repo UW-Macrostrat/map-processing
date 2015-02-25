@@ -18,7 +18,7 @@ with open("matches.txt", "rb") as input_file :
 
       cur.execute("""
 
-        INSERT INTO gmus.geounits_macrounits_redo (geologic_unit_gid, unit_id, strat_name_id, unit_link, type) (
+        INSERT INTO gmus.%(pg_geounits_macrounits)s (geologic_unit_gid, unit_id, strat_name_id, unit_link, type) (
           WITH units AS (
              SELECT us.id AS unit_id, lsn.fm_id AS strat_name_id, lsn.fm_name AS strat_name, c.poly_geom
              FROM %(macrostrat_schema)s.units_sections us
@@ -41,7 +41,14 @@ with open("matches.txt", "rb") as input_file :
           WHERE distance.distance = min_dist.distance
         )
         
-      """, {"strat_name_id": row[1], "unit_link": row[0], "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema) })
+      """, {
+        "strat_name_id": row[1], 
+        "unit_link": row[0], 
+        "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema),
+        "pg_geounits_macrounits": AsIs(credentials.pg_geounits_macrounits) 
+      })
       
       conn.commit()
       print row[0], " - ", row[1]
+
+      
