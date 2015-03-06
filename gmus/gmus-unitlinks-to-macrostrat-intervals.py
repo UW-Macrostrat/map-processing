@@ -72,7 +72,7 @@ def parse_range(min_interval, max_interval, unit_link):
   min_interval_id = interval_lookup[replace_precam(min_interval)][0]
   max_interval_id = interval_lookup[replace_precam(max_interval)][0]
 
-  cur.execute("SELECT id, interval_name, interval_color FROM macrostrat.intervals WHERE age_bottom >= %s AND age_top <= %s ORDER BY rank DESC LIMIT 1", [age_bottom, age_top])
+  cur.execute("SELECT id, interval_name, interval_color FROM macrostrat.intervals JOIN macrostrat.timescales_intervals ON intervals.id = timescales_intervals.interval_id WHERE age_bottom >= %s AND age_top <= %s AND timescale_id != 6 ORDER BY rank DESC LIMIT 1", [age_bottom, age_top])
   match = cur.fetchall()
   if len(match) > 0:
     update(match[0][0], min_interval_id, max_interval_id, unit_link)
@@ -80,7 +80,7 @@ def parse_range(min_interval, max_interval, unit_link):
     print str(unit_link) + "\r"
 
 def update(containing_interval_id, min_interval_id, max_interval_id, unit_link) :
-  #print "UPDATING ", unit_link, " - ", interval_id
+  #print "UPDATING ", unit_link, " - ", containing_interval_id
   cur.execute("UPDATE gmus.ages SET macro_containing_interval_id = %s, macro_min_interval_id = %s, macro_max_interval_id = %s WHERE unit_link = %s", [containing_interval_id, min_interval_id, max_interval_id, unit_link])
   conn.commit()
 
@@ -93,13 +93,15 @@ except:
 
 cur = conn.cursor()
 
-cur.execute("select * from macrostrat.intervals order by interval_name asc")
+cur.execute("select * from macrostrat.intervals i JOIN macrostrat.timescales_intervals ti ON i.id = ti.interval_id WHERE timescale_id != 6 order by interval_name asc")
 intervals = cur.fetchall()
 
 interval_lookup = {}
 
 for i, interval in enumerate(intervals):
   interval_lookup[interval[3]] = interval
+
+print interval_lookup
 
 #cur.execute("select gid, unit_link, min_age, max_age, min_era, max_era, min_eon, max_eon, min_period, max_period, min_epoch, max_epoch from gmus where color is null")
 cur.execute("select unit_link, min_age, max_age, min_era, max_era, min_eon, max_eon, min_period, max_period, min_epoch, max_epoch from gmus.ages")

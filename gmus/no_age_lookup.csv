@@ -1,0 +1,29 @@
+unit_age (from geologic_units),min_eon,min_era,min_period,min_epoch,max_eon,max_era,max_period,max_epoch
+Cambrian,Phanerozoic,Paleozoic,Cambrian,,Phanerozoic,Paleozoic,Cambrian,
+Cambrian to Jurassic,Phanerozoic,Mesozoic,Jurassic,,Phanerozoic,Paleozoic,Cambrian,
+"Cambrian, Devonian, and Mississippi",Phanerozoic,Paleozoic,Mississippian,,Phanerozoic,Paleozoic,Cambrian,
+Carboniferous,Phanerozoic,Paleozoic,Carboniferous,,Phanerozoic,Paleozoic,Carboniferous,
+Cretaceous,Phanerozoic,Mesozoic,Cretaceous,,Phanerozoic,Mesozoic,Cretaceous,
+Early Paleozoic - Late Precambrian (?),Unknown,,,,Unknown,,,
+Early Proterozoic,Proterozoic,Paleoproterozoic,,,Proterozoic,Paleoproterozoic,,
+Early and Middle(?) Triassic,Phanerozoic,Mesozoic,Middle Triassic,,Phanerozoic,Mesozoic,Early Triassic,
+Holocene,Phanerozoic,Cenozoic,Quaternary,Holocene,Phanerozoic,Cenozoic,Quaternary,Holocene
+Jurassic,Phanerozoic,Mesozoic,Jurassic,,Phanerozoic,Mesozoic,Jurassic,
+Jurassic to Cretaceous,Phanerozoic,Mesozoic,Cretaceous,,Phanerozoic,Mesozoic,Jurassic,
+Late Ordovician to Late Silurian,Phanerozoic,Paleozoic,Silurian,Late Silurian,Phanerozoic,Paleozoic,Ordovician,Late Ordovician
+Late Triassic,Phanerozoic,Mesozoic,Triassic,Late Triassic,Phanerozoic,Mesozoic,Triassic,Late Triassic
+Middle-Proterozoic,Proterozoic,Mesoproterozoic,,,Proterozoic,Mesoproterozoic,,
+Oligocene,Phanerozoic,Cenozoic,Tertiary,Oligocene,Phanerozoic,Cenozoic,Tertiary,Oligocene
+Ordovician,Phanerozoic,Paleozoic,Ordovician,,Phanerozoic,Paleozoic,Ordovician,
+Paleozoic,Phanerozoic,Paleozoic,,,Phanerozoic,Paleozoic,,
+Pennsylvanian to Permian,Phanerozoic,Paleozoic,Permian,,Phanerozoic,Paleozoic,Carboniferous,Pennsylvanian
+Pleistocene-Upper Wisconsin,Phanerozoic,Cenozoic,Quaternary,Pleistocene,Phanerozoic,Cenozoic,Quaternary,Pleistocene
+Pliocene,Phanerozoic,Cenozoic,Tertiary,Pliocene,Phanerozoic,Cenozoic,Tertiary,Pliocene
+Quaternary,Phanerozoic,Cenozoic,Quaternary,,Phanerozoic,Cenozoic,Quaternary,
+Silurian,Phanerozoic,Paleozoic,Silurian,,Phanerozoic,Paleozoic,Silurian,
+Triassic and Jurassic,Phanerozoic,Mesozoic,Jurassic,,Phanerozoic,Mesozoic,Triassic,
+Triassic to Cretaceous,Phanerozoic,Mesozoic,Cretaceous,,Phanerozoic,Mesozoic,Triassic,
+Unknown,Unknown,,,,Unknown,,,
+undetermined,Unknown,,,,Unknown,,,
+unknown,Unknown,,,,Unknown,,,
+,Unknown,,,,Unknown,,,

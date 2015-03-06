@@ -28,8 +28,8 @@ with open("matches.txt", "rb") as input_file :
              WHERE c.status_code = 'active' AND lsn.strat_name_id = %(strat_name_id)s
           ), 
           distance AS (
-            SELECT gu.gid, ST_Distance(gu.the_geom::geography, u.poly_geom::geography)/1000 AS distance, gu.unit_link, u.unit_id, u.strat_name_id
-            FROM gmus.geologic_units_with_intervals gu, units u
+            SELECT gu.gid, ST_Distance(gu.geom::geography, u.poly_geom::geography)/1000 AS distance, gu.unit_link, u.unit_id, u.strat_name_id
+            FROM gmus.lookup_units gu, units u
             WHERE unit_link = %(unit_link)s
             ORDER BY gid, distance
           ),

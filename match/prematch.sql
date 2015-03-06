@@ -43,7 +43,9 @@ INSERT INTO gmus.geounits_macrounits_types (id, type) VALUES
 (29, 'ns-mbr_name-unit_com'),
 (30, 'ns-fm_name-unit_com'),
 (31, 'ns-gp_name-unit_com'),
-(32, 'ns-sgp_name-unit_com');
+(32, 'ns-sgp_name-unit_com'),
+(88, 'misses'),
+(99, 'manual-matches');
 
 DROP TABLE IF EXISTS gmus.geounits_macrounits;
 

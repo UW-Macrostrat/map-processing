@@ -18,6 +18,7 @@ pg_cur = pg_conn.cursor()
 my_conn = MySQLdb.connect(host=credentials.mysql_host, user=credentials.mysql_user, passwd=credentials.mysql_passwd, db=credentials.mysql_db, unix_socket=credentials.mysql_socket, cursorclass=MySQLdb.cursors.DictCursor)
 my_cur = my_conn.cursor()
 
+# Remove existing CSVs
 subprocess.call("rm *.csv", shell=True)
 
 directory = os.getcwd()
@@ -34,6 +35,7 @@ params = {
   "col_areas_path": directory + "/col_areas.csv",
   "liths_path": directory + "/liths.csv",
   "lith_atts_path": directory + "/lith_atts.csv",
+  "timescales_intervals_path": directory + "/timescales_intervals.csv",
   "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)
 }
 
@@ -106,6 +108,13 @@ my_cur.execute("""
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
+
+  SELECT * FROM timescales_intervals
+  INTO OUTFILE %(timescales_intervals_path)s
+  FIELDS TERMINATED BY ','
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n';
+
 """, params)
 
 
@@ -212,7 +221,34 @@ CREATE TABLE %(macrostrat_schema)s.lookup_unit_intervals (
 
 COPY %(macrostrat_schema)s.lookup_unit_intervals FROM %(lookup_unit_intervals_path)s NULL '\N' DELIMITER ',' CSV;
 
+ALTER TABLE %(macrostrat_schema)s.lookup_unit_intervals ADD COLUMN best_interval_id integer;
+
+WITH bests AS (
+  select unit_id, 
+    CASE 
+      WHEN age_id > 0 THEN
+        age_id
+      WHEN epoch_id > 0 THEN
+        epoch_id
+      WHEN period_id > 0 THEN
+        period_id
+      WHEN era_id > 0 THEN
+        era_id
+      WHEN eon_id > 0 THEN
+        eon_id
+      ELSE
+        0
+    END
+   AS b_interval_id from %(macrostrat_schema)s.lookup_unit_intervals
+)
+UPDATE %(macrostrat_schema)s.lookup_unit_intervals lui
+SET best_interval_id = b_interval_id
+FROM bests
+WHERE lui.unit_id = bests.unit_id;
+
 CREATE INDEX ON %(macrostrat_schema)s.lookup_unit_intervals (unit_id);
+CREATE INDEX ON %(macrostrat_schema)s.lookup_unit_intervals (best_interval_id);
+
 
 
 CREATE TABLE %(macrostrat_schema)s.units (
@@ -359,6 +395,14 @@ CREATE INDEX ON %(macrostrat_schema)s.lith_atts (att_type);
 CREATE INDEX ON %(macrostrat_schema)s.lith_atts (lith_att);
 
 
+CREATE TABLE %(macrostrat_schema)s.timescales_intervals (
+  timescale_id integer,
+  interval_id integer
+);
+COPY %(macrostrat_schema)s.timescales_intervals FROM %(timescales_intervals_path)s NULL '\N' DELIMITER ',' CSV;
+
+CREATE INDEX ON %(macrostrat_schema).timescales_intervals (timescale_id);
+CREATE INDEX ON %(macrostrat_schema).timescales_intervals (interval_id);
 
 """, params)
 pg_conn.commit()
@@ -384,15 +428,42 @@ subprocess.call("rm *.csv", shell=True)
 
 print "(4 of 6)   Rebuilding gmna.lookup_units"
 pg_cur.execute("""
+  DROP TABLE IF EXISTS gmna.interval_normalize;
+
+  CREATE TABLE gmna.interval_normalize AS
+    WITH gmna_age AS (select distinct min_age AS gmna_interval from gmna.geologic_units where lower(min_age) IN (SELECT distinct lower(interval_name) from macrostrat.intervals) order by min_age asc),
+         macro_age AS (select distinct min_age AS macro_interval from gmna.geologic_units where lower(min_age) IN (SELECT distinct lower(interval_name) from macrostrat.intervals) order by min_age asc)
+
+    SELECT * FROM gmna_age
+    JOIN macro_age on gmna_age.gmna_interval = macro_age.macro_interval;
+
+  COPY gmna.interval_normalize FROM '/Users/john/code/macrostrat/map_processing/gmna/age_mapping.csv' DELIMITER ',' CSV;
+
   DROP TABLE IF EXISTS gmna.lookup_units;
 
   CREATE TABLE gmna.lookup_units AS 
-  SELECT gid, unit_abbre, rocktype, lithology, lith, lith_type, lith_class, lith_color, min.age_top AS min_age, min.interval_name AS min_interval, max.age_bottom AS max_age, max.interval_name AS max_interval, min.interval_name AS containing_interval, mid.interval_color, geom
-  FROM gmna.geologic_units gu
-  JOIN %(macrostrat_schema)s.intervals min ON gu.macro_min_interval_id = min.id
-  JOIN %(macrostrat_schema)s.intervals max ON gu.macro_max_interval_id = max.id
-  JOIN %(macrostrat_schema)s.intervals mid ON gu.macro_containing_interval_id = mid.id
-  JOIN %(macrostrat_schema)s.liths l ON gu.macro_lith_id = l.id;
+    SELECT 
+      gid, 
+      unit_abbre, 
+      rocktype, 
+      lithology, 
+      lith, 
+      lith_type, 
+      lith_class, 
+      lith_color, 
+      min.age_top AS min_age, 
+      min.interval_name AS min_interval, 
+      max.age_bottom AS max_age, 
+      max.interval_name AS max_interval, 
+      (SELECT interval_name from macrostrat.intervals where age_bottom >= max.age_bottom AND age_top <= min.age_top ORDER BY rank DESC LIMIT 1 ) AS containing_interval,
+      (SELECT interval_color from macrostrat.intervals where age_bottom >= max.age_bottom AND age_top <= min.age_top ORDER BY rank DESC LIMIT 1 ) AS interval_color,
+      geom
+    FROM gmna.geologic_units gu
+    JOIN gmna.interval_normalize gin_min ON gu.min_age = gin_min.gmna_interval
+    JOIN gmna.interval_normalize gin_max ON gu.max_age = gin_max.gmna_interval
+    JOIN %(macrostrat_schema)s.intervals min ON gin_min.macro_interval = min.interval_name
+    JOIN %(macrostrat_schema)s.intervals max ON gin_max.macro_interval = max.interval_name
+    JOIN %(macrostrat_schema)s.liths l ON gu.macro_lith_id = l.id;
 
   CREATE INDEX ON gmna.lookup_units (gid);
   CREATE INDEX ON gmna.lookup_units (lith_type);
@@ -405,26 +476,94 @@ pg_cur.execute("""
 pg_conn.commit()
 
 
+print "(4.5 of 6)   Rebuilding gmus.best_geounits_macrounits"
+pg_cur.execute(""" 
+  DROP TABLE IF EXISTS gmus.best_geounits_macrounits;
+  CREATE TABLE gmus.best_geounits_macrounits AS 
+  WITH a AS (
+     SELECT DISTINCT ON (geounits_macrounits.geologic_unit_gid) geounits_macrounits.geologic_unit_gid, array_agg(geounits_macrounits.unit_id) AS best_units
+      FROM gmus.geounits_macrounits
+      GROUP BY geounits_macrounits.geologic_unit_gid, type
+      HAVING type = min(type)
+      ORDER BY geounits_macrounits.geologic_unit_gid asc
+  ),
+  result AS (
+    SELECT geologic_unit_gid, best_units, (
+      SELECT min(t_age) as t_age
+      FROM macrostrat.lookup_unit_intervals
+      WHERE unit_id = ANY(best_units)
+    ) t_age,
+    (
+      SELECT max(b_age) as b_age
+      FROM macrostrat.lookup_unit_intervals
+      WHERE unit_id = ANY(best_units)
+    ) b_age
+    FROM a
+  )
+  SELECT geologic_unit_gid, best_units, t_age, b_age, (
+    SELECT id
+    FROM macrostrat.intervals
+    JOIN macrostrat.timescales_intervals ON intervals.id = timescales_intervals.interval_id
+    WHERE (age_bottom >= b_age) AND (age_top <= t_age) AND timescale_id != 6
+    ORDER BY rank DESC
+    LIMIT 1
+  ) macro_interval_id
+  FROM result;
+""")
+pg_conn.commt()
+
+
 
 print "(5 of 6)   Rebuilding gmus.lookup_units"
 pg_cur.execute("""
-  DROP TABLE IF EXISTS gmus.lookup_units;
+    DROP TABLE IF EXISTS gmus.lookup_units;
 
-  CREATE TABLE gmus.lookup_units AS 
-  SELECT gid, gu.state, gu.unit_link, source, gu.unit_age, gu.rocktype1, gu.rocktype2, new_unit_name AS unit_name, new_unitdesc AS unitdesc, new_strat_unit AS strat_unit, new_unit_com AS unit_com, u.rocktype1 AS u_rocktype1, u.rocktype2 AS u_rocktype2, u.rocktype3 AS u_rocktype3, i.interval_color, i.interval_name, i.age_bottom, i.age_top, a.macro_containing_interval_id AS macro_interval_id, geom
-  FROM gmus.geologic_units gu
-  LEFT JOIN gmus.units u ON gu.unit_link = u.unit_link
-  LEFT JOIN gmus.ages a ON gu.unit_link = a.unit_link
-  LEFT JOIN %(macrostrat_schema)s.intervals i ON a.macro_containing_interval_id = i.id;
+    CREATE TABLE gmus.lookup_units AS 
+    SELECT 
+      gid, 
+      gu.state, 
+      gu.unit_link, 
+      source, 
+      gu.unit_age, 
+      gu.rocktype1, 
+      gu.rocktype2, 
+      new_unit_name AS unit_name, 
+      new_unitdesc AS unitdesc, 
+      new_strat_unit AS strat_unit, 
+      new_unit_com AS unit_com, 
+      u.rocktype1 AS u_rocktype1, 
+      u.rocktype2 AS u_rocktype2, 
+      u.rocktype3 AS u_rocktype3, 
+      i.interval_color, 
+      i.interval_name, 
+      i.age_bottom, 
+      i.age_top, 
+      a.macro_containing_interval_id AS macro_interval_id, 
+      i2.interval_name AS macro_interval_name,
+      bgm.b_age AS macro_b_age, 
+      bgm.t_age AS macro_t_age, 
+      i2.interval_color AS macro_color, 
+      geom, 
+      to_tsvector('macro', concat(unit_name, ' ', strat_unit, ' ', unitdesc, ' ', unit_com)) AS text_search
 
-  CREATE INDEX ON gmus.lookup_units (gid);
-  CREATE INDEX ON gmus.lookup_units (state);
-  CREATE INDEX ON gmus.lookup_units (unit_link);
-  CREATE INDEX ON gmus.lookup_units (macro_interval_id);
-  CREATE INDEX ON gmus.lookup_units (unit_name);
-  CREATE INDEX ON gmus.lookup_units (age_bottom);
-  CREATE INDEX ON gmus.lookup_units (age_top);
-  CREATE INDEX ON gmus.lookup_units USING GIST (geom);
+    FROM gmus.geologic_units gu
+    LEFT JOIN gmus.units u ON gu.unit_link = u.unit_link
+    LEFT JOIN gmus.ages a ON gu.unit_link = a.unit_link
+    LEFT JOIN %(macrostrat_schema)s.intervals i ON a.macro_containing_interval_id = i.id
+    LEFT JOIN gmus.best_geounits_macrounits bgm ON gu.gid = bgm.geologic_unit_gid
+    LEFT JOIN %(macrostrat_schema)s.intervals i2 ON bgm.macro_interval_id = i2.id;
+
+    UPDATE gmus.lookup_units SET macro_color = interval_color WHERE macro_color IS null;
+
+    CREATE INDEX ON gmus.lookup_units (gid);
+    CREATE INDEX ON gmus.lookup_units (state);
+    CREATE INDEX ON gmus.lookup_units (unit_link);
+    CREATE INDEX ON gmus.lookup_units (macro_interval_id);
+    CREATE INDEX ON gmus.lookup_units (unit_name);
+    CREATE INDEX ON gmus.lookup_units (age_bottom);
+    CREATE INDEX ON gmus.lookup_units (age_top);
+    CREATE INDEX ON gmus.lookup_units USING GIST (geom);
+    CREATE INDEX ON gmus.lookup_units USING GIN (text_search);
 
 """, {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_conn.commit()
