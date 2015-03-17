@@ -49,7 +49,7 @@ class Task(object):
     
     pyCursor1.execute("""
       INSERT INTO gmus.%(pg_geounits_macrounits)s (geologic_unit_gid, unit_id, strat_name_id, unit_link, type) (
-         WITH gmus AS (SELECT gid, unit_link, %(gmus_field)s AS unit_text, age_top, age_bottom, 25 as age_buffer
+         WITH gmus AS (SELECT gid, unit_link, %(gmus_field)s AS unit_text, lookup_units.age_top, lookup_units.age_bottom, 25 as age_buffer
                 FROM gmus.lookup_units
                 JOIN macrostrat.intervals on macro_interval_id = macrostrat.intervals.id
                 WHERE unit_link NOT IN (SELECT DISTINCT unit_link FROM gmus.%(pg_geounits_macrounits)s)),

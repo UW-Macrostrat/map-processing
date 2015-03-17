@@ -55,13 +55,13 @@ unit_link, strat_name_id
 "MESsl;0",1819
 "MESspm;0",1819
 "MESsr;0",1819
- "MIOq;0",4205
- "MIOu;0",4258
- "NCCAr;2",1763
- "NEPAd;0",2463
- "NEPa;0",2358
- "NEPc;0",2413
- "NHDgc;0",747
+"MIOq;0",4205
+"MIOu;0",4258
+"NCCAr;2",1763
+"NEPAd;0",2463
+"NEPa;0",2358
+"NEPc;0",2413
+"NHDgc;0",747
 "NHDgm;0",747
 "NHDgv;0",747
 "NHOCAd;0",502
@@ -255,32 +255,6 @@ unit_link, strat_name_id
 "WYTwa;0",2243
 "WYTwk;0",2242
 "WYTwmo;0",2242
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

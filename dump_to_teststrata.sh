@@ -1,2 +1,1 @@
-psql -h localhost -p 5439 -c "DROP DATABASE geomacro;"
-pg_dump -C geomacro | psql -h localhost -p 5439
+psql -h localhost -p 5439 -c "DROP DATABASE IF EXISTS geomacro;" && pg_dump -C -h localhost -p 5432 geomacro | psql -h localhost -p 5439

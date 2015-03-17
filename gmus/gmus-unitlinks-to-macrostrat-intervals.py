@@ -2,6 +2,7 @@ import re
 import psycopg2
 import sys, os
 
+sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
 import credentials
 
 def is_valid(interval) :
@@ -53,7 +54,7 @@ def parse_range(min_interval, max_interval, unit_link):
     elif max_interval == "preCambrian" :
       age_bottom = interval_lookup["Precambrian"][1]
     else :
-      print "FUCK UP MAX", max_interval
+      print "MESS UP MAX", max_interval
 
   try :
     age_top = interval_lookup[min_interval][2]
@@ -67,12 +68,20 @@ def parse_range(min_interval, max_interval, unit_link):
     elif min_interval == "preCambrian" :
       age_top = interval_lookup["Precambrian"][2]
     else :
-      print "FUCK UP MIN", min_interval
+      print "MESS UP MIN", min_interval
 
   min_interval_id = interval_lookup[replace_precam(min_interval)][0]
   max_interval_id = interval_lookup[replace_precam(max_interval)][0]
 
-  cur.execute("SELECT id, interval_name, interval_color FROM macrostrat.intervals JOIN macrostrat.timescales_intervals ON intervals.id = timescales_intervals.interval_id WHERE age_bottom >= %s AND age_top <= %s AND timescale_id != 6 ORDER BY rank DESC LIMIT 1", [age_bottom, age_top])
+  cur.execute("""
+    SELECT id, interval_name, interval_color 
+    FROM macrostrat.intervals 
+    LEFT JOIN macrostrat.timescales_intervals ON intervals.id = timescales_intervals.interval_id 
+    WHERE age_bottom >= %s AND age_top <= %s 
+    AND (timescale_id != 6 or timescale_id is null) 
+    ORDER BY rank DESC, id asc 
+    LIMIT 1""", [age_bottom, age_top])
+
   match = cur.fetchall()
   if len(match) > 0:
     update(match[0][0], min_interval_id, max_interval_id, unit_link)
@@ -80,7 +89,6 @@ def parse_range(min_interval, max_interval, unit_link):
     print str(unit_link) + "\r"
 
 def update(containing_interval_id, min_interval_id, max_interval_id, unit_link) :
-  #print "UPDATING ", unit_link, " - ", containing_interval_id
   cur.execute("UPDATE gmus.ages SET macro_containing_interval_id = %s, macro_min_interval_id = %s, macro_max_interval_id = %s WHERE unit_link = %s", [containing_interval_id, min_interval_id, max_interval_id, unit_link])
   conn.commit()
 
@@ -93,15 +101,13 @@ except:
 
 cur = conn.cursor()
 
-cur.execute("select * from macrostrat.intervals i JOIN macrostrat.timescales_intervals ti ON i.id = ti.interval_id WHERE timescale_id != 6 order by interval_name asc")
+cur.execute("select * from macrostrat.intervals i LEFT JOIN macrostrat.timescales_intervals ti ON i.id = ti.interval_id WHERE (timescale_id != 6 or timescale_id is null) order by interval_name asc")
 intervals = cur.fetchall()
 
 interval_lookup = {}
 
 for i, interval in enumerate(intervals):
   interval_lookup[interval[3]] = interval
-
-print interval_lookup
 
 #cur.execute("select gid, unit_link, min_age, max_age, min_era, max_era, min_eon, max_eon, min_period, max_period, min_epoch, max_epoch from gmus where color is null")
 cur.execute("select unit_link, min_age, max_age, min_era, max_era, min_eon, max_eon, min_period, max_period, min_epoch, max_epoch from gmus.ages")
@@ -111,11 +117,6 @@ total = len(units)
 for i, unit in enumerate(units):
   sys.stdout.write("\r" + str(i) + " of " + str(total))
   sys.stdout.flush()
-
-  '''if (unit[2] is None) or (unit[3] is None):
-    print "skipping ", unit
-    #break
-  else :'''
 
   # Check for min_age
   if is_valid(unit[1]) :
@@ -178,7 +179,7 @@ for i, unit in enumerate(units):
         try:
           int_id = interval_lookup[replace_precam(min_interval)][0]
         except:
-          print "EQUIVALENCY FUCK UP ", min_interval
+          print "EQUIVALENCY MESS UP ", min_interval
 
         update(int_id, int_id, int_id, unit[0])
 

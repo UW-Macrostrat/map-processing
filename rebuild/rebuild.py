@@ -9,6 +9,7 @@ import subprocess
 sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
 import credentials
 
+from macro_intervals_to_gmus_ages import *
 
 # Connect to Postgres
 pg_conn = psycopg2.connect(dbname=credentials.pg_db, user=credentials.pg_user, host=credentials.pg_host, port=credentials.pg_port)
@@ -17,6 +18,104 @@ pg_cur = pg_conn.cursor()
 # Connect to MySQL
 my_conn = MySQLdb.connect(host=credentials.mysql_host, user=credentials.mysql_user, passwd=credentials.mysql_passwd, db=credentials.mysql_db, unix_socket=credentials.mysql_socket, cursorclass=MySQLdb.cursors.DictCursor)
 my_cur = my_conn.cursor()
+
+
+
+
+
+# Functions for step #8
+def is_valid(interval) :
+  interval = replace_precam(interval)
+  if (interval is not None) and (len(interval) > 1) and ((interval in interval_lookup) or (' '.join(fix_parts(interval.split("-"))) in interval_lookup)):
+    return True
+  else :
+    return False
+
+def fix_parts(parts) :
+  for part in parts :
+    replace_precam(part)
+  return parts
+
+def replace_precam(interval) :
+  if interval == "preCambrian" :
+    return "Precambrian"
+  else :
+    return interval
+
+def parse_range(min_interval, max_interval, unit_link):
+  min_interval = replace_precam(min_interval)
+  max_interval = replace_precam(max_interval)
+
+  if "-" in min_interval:
+    parts = fix_parts(min_interval.split("-"))
+
+    if (parts[0] == "Early") or (parts[0] == "Late") or (parts[0] == "Middle") :
+      min_interval = ' '.join(parts)
+    else :
+      print "MIN_INTERVAL DOESN'T HAVE EARLY LATE OR MIDDLE ", min_interval
+
+  if "-" in max_interval:
+    parts = fix_parts(max_interval.split("-"))
+    if (parts[0] == "Early") or (parts[0] == "Late") or (parts[0] == "Middle") :
+      max_interval = ' '.join(parts)
+    else :
+      print "MAX_INTERVAL DOESN'T HAVE EARLY LATE OR MIDDLE ", max_interval
+
+  try :
+    age_bottom = interval_lookup[max_interval][1]
+  except :
+    if max_interval.split(" ")[0] == "Late" :
+      max_interval = "Upper " + max_interval.split(" ")[1]
+      age_bottom = interval_lookup[max_interval][1]
+    elif max_interval.split(" ")[0] == "Early" :
+      max_interval = "Lower " + max_interval.split(" ")[1]
+      age_bottom = interval_lookup[max_interval][1]
+    elif max_interval == "preCambrian" :
+      age_bottom = interval_lookup["Precambrian"][1]
+    else :
+      print "MESS UP MAX", max_interval
+
+  try :
+    age_top = interval_lookup[min_interval][2]
+  except :
+    if min_interval.split(" ")[0] == "Late" :
+      min_interval = "Upper " + min_interval.split(" ")[1]
+      age_top = interval_lookup[min_interval][2]
+    elif min_interval.split(" ")[0] == "Early" :
+      min_interval = "Lower " + min_interval.split(" ")[1]
+      age_top = interval_lookup[min_interval][2]
+    elif min_interval == "preCambrian" :
+      age_top = interval_lookup["Precambrian"][2]
+    else :
+      print "MESS UP MIN", min_interval
+
+  min_interval_id = interval_lookup[replace_precam(min_interval)][0]
+  max_interval_id = interval_lookup[replace_precam(max_interval)][0]
+
+  pg_cur.execute("""
+    SELECT id, interval_name, interval_color 
+    FROM macrostrat.intervals 
+    LEFT JOIN macrostrat.timescales_intervals ON intervals.id = timescales_intervals.interval_id 
+    WHERE age_bottom >= %s AND age_top <= %s 
+    AND (timescale_id != 6 or timescale_id is null) 
+    ORDER BY rank DESC, id asc 
+    LIMIT 1""", [age_bottom, age_top])
+
+  match = pg_cur.fetchall()
+  if len(match) > 0:
+    update(match[0][0], min_interval_id, max_interval_id, unit_link)
+  else :
+    print str(unit_link) + "\r"
+
+def update(containing_interval_id, min_interval_id, max_interval_id, unit_link) :
+  pg_cur.execute("UPDATE gmus.ages SET macro_containing_interval_id = %s, macro_min_interval_id = %s, macro_max_interval_id = %s WHERE unit_link = %s", [containing_interval_id, min_interval_id, max_interval_id, unit_link])
+  pg_conn.commit()
+
+
+
+
+
+# Start the process
 
 # Remove existing CSVs
 subprocess.call("rm *.csv", shell=True)
@@ -39,7 +138,10 @@ params = {
   "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)
 }
 
-print "(1 of 6)   Dumping from MySQL"
+
+
+
+print "(1 of 8)   Dumping from MySQL"
 my_cur.execute("""
 
   SELECT * FROM unit_strat_names
@@ -118,10 +220,17 @@ my_cur.execute("""
 """, params)
 
 
+
+
+
 subprocess.call("chmod 777 *.csv", shell=True)
 
 
-print "(2 of 6)   Importing into Postgres"
+
+
+
+
+print "(2 of 8)   Importing into Postgres"
 pg_cur.execute(""" 
 
 DROP SCHEMA IF EXISTS %(macrostrat_schema)s cascade;
@@ -401,14 +510,17 @@ CREATE TABLE %(macrostrat_schema)s.timescales_intervals (
 );
 COPY %(macrostrat_schema)s.timescales_intervals FROM %(timescales_intervals_path)s NULL '\N' DELIMITER ',' CSV;
 
-CREATE INDEX ON %(macrostrat_schema).timescales_intervals (timescale_id);
-CREATE INDEX ON %(macrostrat_schema).timescales_intervals (interval_id);
+CREATE INDEX ON %(macrostrat_schema)s.timescales_intervals (timescale_id);
+CREATE INDEX ON %(macrostrat_schema)s.timescales_intervals (interval_id);
 
 """, params)
 pg_conn.commit()
 
 
-print "(3 of 6)   Vacuuming macrostrat"
+
+
+
+print "(3 of 8)   Vacuuming macrostrat"
 pg_conn.set_isolation_level(0)
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.unit_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
@@ -426,7 +538,10 @@ pg_conn.commit()
 subprocess.call("rm *.csv", shell=True)
 
 
-print "(4 of 6)   Rebuilding gmna.lookup_units"
+
+
+
+print "(4 of 8)   Rebuilding gmna.lookup_units"
 pg_cur.execute("""
   DROP TABLE IF EXISTS gmna.interval_normalize;
 
@@ -476,13 +591,17 @@ pg_cur.execute("""
 pg_conn.commit()
 
 
-print "(4.5 of 6)   Rebuilding gmus.best_geounits_macrounits"
+
+
+
+print "(5 of 8)   Rebuilding gmus.best_geounits_macrounits"
 pg_cur.execute(""" 
   DROP TABLE IF EXISTS gmus.best_geounits_macrounits;
   CREATE TABLE gmus.best_geounits_macrounits AS 
   WITH a AS (
      SELECT DISTINCT ON (geounits_macrounits.geologic_unit_gid) geounits_macrounits.geologic_unit_gid, array_agg(geounits_macrounits.unit_id) AS best_units
       FROM gmus.geounits_macrounits
+      WHERE strat_name_id NOT IN (7186, 7213, 7030, 2817)
       GROUP BY geounits_macrounits.geologic_unit_gid, type
       HAVING type = min(type)
       ORDER BY geounits_macrounits.geologic_unit_gid asc
@@ -503,18 +622,26 @@ pg_cur.execute("""
   SELECT geologic_unit_gid, best_units, t_age, b_age, (
     SELECT id
     FROM macrostrat.intervals
-    JOIN macrostrat.timescales_intervals ON intervals.id = timescales_intervals.interval_id
-    WHERE (age_bottom >= b_age) AND (age_top <= t_age) AND timescale_id != 6
+    LEFT JOIN macrostrat.timescales_intervals ON intervals.id = timescales_intervals.interval_id
+    WHERE age_bottom >= b_age AND age_top <= t_age AND (timescale_id != 6 or timescale_id is null)
     ORDER BY rank DESC
     LIMIT 1
   ) macro_interval_id
   FROM result;
+
+  CREATE INDEX ON gmus.best_geounits_macrounits (geologic_unit_gid);
+  CREATE INDEX ON gmus.best_geounits_macrounits (best_units);
+  CREATE INDEX ON gmus.best_geounits_macrounits (t_age);
+  CREATE INDEX ON gmus.best_geounits_macrounits (b_age);
+  CREATE INDEX ON gmus.best_geounits_macrounits (macro_interval_id);
 """)
-pg_conn.commt()
+pg_conn.commit()
 
 
 
-print "(5 of 6)   Rebuilding gmus.lookup_units"
+
+
+print "(6 of 8)   Rebuilding gmus.lookup_units"
 pg_cur.execute("""
     DROP TABLE IF EXISTS gmus.lookup_units;
 
@@ -569,10 +696,104 @@ pg_cur.execute("""
 pg_conn.commit()
 
 
-print "(6 of 6)   Vacuuming lookup tables"
+
+
+
+print "(7 of 8)   Vacuuming lookup tables"
+pg_cur.execute("VACUUM ANALYZE gmus.best_geounits_macrounits;")
 pg_cur.execute("VACUUM ANALYZE gmna.lookup_units;")
 pg_cur.execute("VACUUM ANALYZE gmus.lookup_units;")
 pg_conn.commit()
+
+
+
+
+
+print "(8 of 8)   Matching Macrostrat intervals to GMUS"
+pg_cur.execute("""
+  SELECT * FROM macrostrat.intervals i 
+  LEFT JOIN macrostrat.timescales_intervals ti ON i.id = ti.interval_id 
+  WHERE (timescale_id != 6 OR timescale_id IS NULL) 
+  ORDER BY interval_name ASC""")
+intervals = pg_cur.fetchall()
+
+interval_lookup = {}
+
+for i, interval in enumerate(intervals):
+  interval_lookup[interval[3]] = interval
+
+pg_cur.execute("SELECT unit_link, min_age, max_age, min_era, max_era, min_eon, max_eon, min_period, max_period, min_epoch, max_epoch FROM gmus.ages")
+units = pg_cur.fetchall()
+
+total = len(units)
+for i, unit in enumerate(units):
+  # Check for min_age
+  if is_valid(unit[1]) :
+    min_interval = unit[1]
+  # min_epoch
+  elif is_valid(unit[9]) :
+    min_interval = unit[9]
+  # min_period
+  elif is_valid(unit[7]) :
+    min_interval = unit[7]
+  # min era
+  elif is_valid(unit[3]) :
+    min_interval = unit[3]
+  # min eon
+  elif is_valid(unit[5]) :
+    min_interval = unit[5]
+
+
+  # Check for max_age
+  if is_valid(unit[2]) :
+    max_interval = unit[2]
+  # max_epoch
+  elif is_valid(unit[10]) :
+    max_interval = unit[10]
+  # max_period
+  elif is_valid(unit[8]) :
+    max_interval = unit[8]
+  # max era
+  elif is_valid(unit[4]) :
+    max_interval = unit[4]
+  # max eon
+  elif is_valid(unit[6]) :
+    max_interval = unit[6]
+
+  try :
+    max_interval
+    min_interval
+  except NameError:
+    print "MIN OR MAX_INTERVAL NOT DEFINED ", unit
+
+
+  else :
+    if min_interval == max_interval :
+      if "-" in min_interval:
+
+        parts = fix_parts(min_interval.split("-"))
+        if (parts[0] == "Early") or (parts[0] == "Late") or (parts[0] == "Middle") :
+          try:
+            int_id = interval_lookup[' '.join(parts)][0]
+          except:
+            print ' '.join(parts)
+
+          update(int_id, int_id, int_id, unit[0])
+        else :
+          ## Split it on the '-' and treat it like a range
+          parts = min_interval.split("-")
+          parse_range(parts[0], parts[1], unit[0])
+
+      else:
+        try:
+          int_id = interval_lookup[replace_precam(min_interval)][0]
+        except:
+          print "EQUIVALENCY MESS UP ", min_interval
+
+        update(int_id, int_id, int_id, unit[0])
+
+    else :
+      parse_range(min_interval, max_interval, unit[0])
 
 
 print "Done!"

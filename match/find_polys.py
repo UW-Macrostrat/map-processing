@@ -20,7 +20,7 @@ with open("matches.txt", "rb") as input_file :
 
         INSERT INTO gmus.%(pg_geounits_macrounits)s (geologic_unit_gid, unit_id, strat_name_id, unit_link, type) (
           WITH units AS (
-             SELECT us.id AS unit_id, lsn.fm_id AS strat_name_id, lsn.fm_name AS strat_name, c.poly_geom
+             SELECT us.unit_id AS unit_id, lsn.strat_name_id, lsn.fm_name AS strat_name, c.poly_geom
              FROM %(macrostrat_schema)s.units_sections us
              JOIN %(macrostrat_schema)s.unit_strat_names usn ON us.unit_id = usn.unit_id
              JOIN %(macrostrat_schema)s.lookup_strat_names lsn ON usn.strat_name_id = lsn.strat_name_id
