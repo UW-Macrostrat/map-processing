@@ -64,3 +64,11 @@ Get all GMUS attribute data from USGS (both CSVs and JSON), import it into Postg
 8. Run ````best_attributes.py````. This populates the ````best_*```` fields using the best data from either the CSV or JSON response.
  
 
+## fts
+Set up the database for our custom full-text search
+
+#### macro_synonyms.syn
+Move this into the full-text search folder. If using [Postgres.app](http://postgresapp.com/), it will be ````/Applications/Postgres93.app/Contents/MacOS/share/postgresql/tsearch_data````, if using Macports it will be ````/opt/local/share/postgresql93/tsearch_data````.
+
+#### build\_ts\_dicts
+Run ````psql geomacro < build_ts_dicts.sql```` to set up our custom dictionary and synonynms.

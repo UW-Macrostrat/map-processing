@@ -9,8 +9,6 @@ import subprocess
 sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
 import credentials
 
-from macro_intervals_to_gmus_ages import *
-
 # Connect to Postgres
 pg_conn = psycopg2.connect(dbname=credentials.pg_db, user=credentials.pg_user, host=credentials.pg_host, port=credentials.pg_port)
 pg_cur = pg_conn.cursor()
