@@ -660,9 +660,11 @@ pg_cur.execute("""
       u.rocktype2 AS u_rocktype2, 
       u.rocktype3 AS u_rocktype3, 
       i.interval_color, 
-      i.interval_name, 
-      i.age_bottom, 
-      i.age_top, 
+      i.interval_name AS containing_interval_name, 
+      ia.age_bottom,
+      ia.interval_name AS max_interval_name,
+      ib.age_top, 
+      ib.interval_name AS min_interval_name,
       a.macro_containing_interval_id AS macro_interval_id, 
       i2.interval_name AS macro_interval_name,
       bgm.b_age AS macro_b_age, 
@@ -674,6 +676,8 @@ pg_cur.execute("""
     FROM gmus.geologic_units gu
     LEFT JOIN gmus.units u ON gu.unit_link = u.unit_link
     LEFT JOIN gmus.ages a ON gu.unit_link = a.unit_link
+    LEFT JOIN %(macrostrat_schema)s.intervals ia ON a.macro_max_interval_id = ia.id
+    LEFT JOIN %(macrostrat_schema)s.intervals ib ON a.macro_min_interval_id = ib.id
     LEFT JOIN %(macrostrat_schema)s.intervals i ON a.macro_containing_interval_id = i.id
     LEFT JOIN gmus.best_geounits_macrounits bgm ON gu.gid = bgm.geologic_unit_gid
     LEFT JOIN %(macrostrat_schema)s.intervals i2 ON bgm.macro_interval_id = i2.id;

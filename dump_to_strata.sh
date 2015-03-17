@@ -1,1 +1,1 @@
-psql -h localhost -p 5440 -c "DROP DATABASE IF EXISTS geomacro;" && pg_dump -C -h localhost -p 5432 geomacro | psql -h localhost -p 5440
+psql -h localhost -p 5440 -c "CREATE DATABASE new_geomacro;" && pg_dump -h localhost -p 5432 geomacro | psql -h localhost -p 5440 new_geomacro && psql -h localhost -p 5440 -c "DROP DATABASE geomacro;" && psql -h localhost -p 5440 -c "ALTER DATABASE new_geomacro RENAME TO geomacro;"
