@@ -597,15 +597,15 @@ pg_cur.execute("""
   DROP TABLE IF EXISTS gmus.best_geounits_macrounits;
   CREATE TABLE gmus.best_geounits_macrounits AS 
   WITH a AS (
-     SELECT DISTINCT ON (geounits_macrounits.geologic_unit_gid) geounits_macrounits.geologic_unit_gid, array_agg(geounits_macrounits.unit_id) AS best_units
+     SELECT DISTINCT ON (geounits_macrounits.geologic_unit_gid) geounits_macrounits.geologic_unit_gid, unit_link, array_agg(geounits_macrounits.unit_id) AS best_units
       FROM gmus.geounits_macrounits
       WHERE strat_name_id NOT IN (7186, 7213, 7030, 2817)
-      GROUP BY geounits_macrounits.geologic_unit_gid, type
+      GROUP BY geounits_macrounits.geologic_unit_gid, unit_link, type
       HAVING type = min(type)
       ORDER BY geounits_macrounits.geologic_unit_gid asc
   ),
   result AS (
-    SELECT geologic_unit_gid, best_units, (
+    SELECT geologic_unit_gid, unit_link, best_units, (
       SELECT min(t_age) as t_age
       FROM macrostrat.lookup_unit_intervals
       WHERE unit_id = ANY(best_units)
@@ -617,7 +617,7 @@ pg_cur.execute("""
     ) b_age
     FROM a
   )
-  SELECT geologic_unit_gid, best_units, t_age, b_age, (
+  SELECT geologic_unit_gid, unit_link, best_units, t_age, b_age, (
     SELECT id
     FROM macrostrat.intervals
     LEFT JOIN macrostrat.timescales_intervals ON intervals.id = timescales_intervals.interval_id
