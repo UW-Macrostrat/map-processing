@@ -232,8 +232,28 @@ def strat_name_match() :
 # Make a unit_link -> strat_name_id match
 if arguments.strat_name_id != "na" :
   strat_name_match()
+  cur.execute(""" 
+    DELETE FROM gmus.alterations WHERE unit_link = %(unit_link)s AND strat_name_id = %(strat_name_id)s AND addition is TRUE;
+
+    INSERT INTO gmus.alterations (unit_link, strat_name_id, addition) VALUES (%(unit_link)s, %(strat_name_id)s, TRUE);
+  """, {
+    "unit_link": arguments.unit_link,
+    "strat_name_id": arguments.strat_name_id
+  })
+  conn.commit()
+
 elif arguments.unit_id != "na" :
   unit_match()
+  cur.execute(""" 
+    DELETE FROM gmus.alterations WHERE unit_link = %(unit_link)s AND unit_id = %(unit_id)s AND addition is TRUE;
+
+    INSERT INTO gmus.alterations (unit_link, unit_id, addition) VALUES (%(unit_link)s, %(unit_id)s, TRUE);
+  """, {
+    "unit_link": arguments.unit_link,
+    "unit_id": arguments.unit_id
+  })
+  conn.commit()
+
 else :
   print "Huh?"
 

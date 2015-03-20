@@ -59,7 +59,7 @@ def remove_unit_link_strat_name_id() :
   cur.execute("""
     DELETE FROM gmus.alterations WHERE unit_link = %(unit_link)s AND strat_name_id = %(strat_name_id)s AND removal is TRUE;
 
-    INSERT INTO gmus.alterations (unit_link, strat_name_id, removal) VALUES (%(unit_link)s, %(strat_name_id)s, TRUE)
+    INSERT INTO gmus.alterations (unit_link, strat_name_id, removal) VALUES (%(unit_link)s, %(strat_name_id)s, TRUE);
     """,{
       "unit_link": arguments.unit_link,
       "strat_name_id": arguments.strat_name_id
@@ -81,7 +81,7 @@ def remove_unit_link_unit_id() :
   cur.execute("""
     DELETE FROM gmus.alterations WHERE unit_link = %(unit_link)s AND unit_id = %(unit_id)s AND removal is TRUE;
 
-    INSERT INTO gmus.alterations (unit_link, unit_id, removal) VALUES (%(unit_link)s, %(unit_id)s, TRUE)
+    INSERT INTO gmus.alterations (unit_link, unit_id, removal) VALUES (%(unit_link)s, %(unit_id)s, TRUE);
     """,{
       "unit_link": arguments.unit_link,
       "unit_id": arguments.unit_id
@@ -103,7 +103,7 @@ def remove_gid_strat_name_id() :
   cur.execute("""
     DELETE FROM gmus.alterations WHERE gid = %(gid)s AND strat_name_id = %(strat_name_id)s AND removal is TRUE;
 
-    INSERT INTO gmus.alterations (geologic_unit_gid, strat_name_id, removal) VALUES (%(gid)s, %(strat_name_id)s, TRUE)
+    INSERT INTO gmus.alterations (geologic_unit_gid, strat_name_id, removal) VALUES (%(gid)s, %(strat_name_id)s, TRUE);
     """,{
       "gid": arguments.gid,
       "strat_name_id": arguments.strat_name_id
@@ -126,7 +126,7 @@ def remove_gid_unit_id() :
   cur.execute("""
     DELETE FROM gmus.alterations WHERE gid = %(gid)s AND unit_id = %(unit_id)s AND removal is TRUE;
 
-    INSERT INTO gmus.alterations (geologic_unit_gid, unit_id, removal) VALUES (%(gid)s, %(unit_id)s, TRUE)
+    INSERT INTO gmus.alterations (geologic_unit_gid, unit_id, removal) VALUES (%(gid)s, %(unit_id)s, TRUE);
     """,{
       "gid": arguments.gid,
       "unit_id": arguments.strat_name_id
