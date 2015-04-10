@@ -550,7 +550,7 @@ pg_cur.execute("""
     SELECT * FROM gmna_age
     JOIN macro_age on gmna_age.gmna_interval = macro_age.macro_interval;
 
-  COPY gmna.interval_normalize FROM '/Users/john/code/macrostrat/map_processing/gmna/age_mapping.csv' DELIMITER ',' CSV;
+  COPY gmna.interval_normalize FROM %(age_mapping)s DELIMITER ',' CSV;
 
   DROP TABLE IF EXISTS gmna.lookup_units;
 
@@ -586,7 +586,7 @@ pg_cur.execute("""
   CREATE INDEX ON gmna.lookup_units (max_age);
   CREATE INDEX ON gmna.lookup_units USING GIST (geom);
 
-""", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+""", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema), "age_mapping": os.getcwd() + "/gmna/age_mapping.csv"})
 pg_conn.commit()
 
 
