@@ -72,3 +72,24 @@ Move this into the full-text search folder. If using [Postgres.app](http://postg
 
 #### build\_ts\_dicts
 Run ````psql geomacro < build_ts_dicts.sql```` to set up our custom dictionary and synonynms.
+
+
+## tiles
+I usually do the first steps on my laptop
+#### GMUS
++ Dump ````playground```` from strata
++ Import locally
++ Run ````python rebuild/rebuild.py````
++ Open TileMill -> gmus_new
++ Run ````python gmus/colors.py````
++ Open ````gmus/gmus_macro_styles.txt````, copy the contents, and paste into the styles panel in TileMill
++ Hit _Save_ in TileMill
++ In TileMill select _Export_ -> _MBTiles_
++ Hit _Export_
++ When it's done, copy the resultant file to the server. Probably something like, ````scp ~/Documents/MapBox/export/gmus_new.mbtiles strata:/Users/you````
++ Log in to the server, move the MBTiles file to your tile directory (example: ````/Library/WebServer/thing/tiles````), then navigate to that directory
++ Run ````mb-util gmus_new.mbtiles gmus_new --image_format=png````
+
+````
+ sudo rm -rf geologic_v2/7 && sudo cp -r gmus_new/7 geologic_v2/7 && sudo rm -rf geologic_v2/8 && sudo cp -r gmus_new/8 geologic_v2/8 && sudo rm -rf geologic_v2/9 && sudo cp -r gmus_new/9 geologic_v2/9 && sudo rm -rf geologic_v2/10 && sudo cp -r gmus_new/10 geologic_v2/10 && sudo rm -rf geologic_v2/11 && sudo cp -r gmus_new/11 geologic_v2/11 && sudo rm -rf geologic_v2/12 && sudo cp -r gmus_new/12 geologic_v2/12 
+````
