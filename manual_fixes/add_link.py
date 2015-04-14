@@ -192,12 +192,13 @@ def strat_name_match() :
 
   # Insert into best_geounits_macrounits
   cur.execute("""
+  INSERT INTO gmus.best_geounits_macrounits (geologic_unit_gid, unit_link, best_units, t_age, b_age, macro_interval_id) (
     WITH first as (SELECT geologic_unit_gid, unit_link, unit_id AS unit
       FROM gmus.%(pg_geounits_macrounits)s 
       WHERE unit_link = %(unit_link)s AND strat_name_id = %(strat_name_id)s AND type = 0
     ),
     result AS (
-      SELECT geologic_unit_gid, unit_link, unit_id, (
+      SELECT geologic_unit_gid, unit_link, unit, (
         SELECT min(t_age) as t_age
         FROM %(macrostrat_schema)s.lookup_unit_intervals
         WHERE unit_id = unit
@@ -212,12 +213,13 @@ def strat_name_match() :
     SELECT geologic_unit_gid, unit_link, array[unit] AS best_units, t_age, b_age, (
       SELECT id
       FROM %(macrostrat_schema)s.intervals
-      LEFT JOIN %(macrostrat_schema)st.timescales_intervals ON intervals.id = timescales_intervals.interval_id
+      LEFT JOIN %(macrostrat_schema)s.timescales_intervals ON intervals.id = timescales_intervals.interval_id
       WHERE age_bottom >= b_age AND age_top <= t_age AND (timescale_id != 6 or timescale_id is null)
       ORDER BY rank DESC
       LIMIT 1
     ) macro_interval_id
     FROM result
+   )
   """, {
     "strat_name_id": arguments.strat_name_id, 
     "unit_link": arguments.unit_link, 
