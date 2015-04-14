@@ -182,7 +182,7 @@ def strat_name_match() :
   # Delete from best_geounits_macrounits
   cur.execute(""" 
     DELETE FROM gmus.best_geounits_macrounits WHERE geologic_unit_gid IN (
-      SELECT geologic_unit_gid FROM gmus.geounits_macrounits WHERE unit_link = %(unit_link)s AND strat_name_id = %(strat_name_id)s AND type = 0
+      SELECT geologic_unit_gid FROM gmus.geounits_macrounits WHERE unit_link = %(unit_link)s AND type > 0
     )
   """, {
     "strat_name_id": arguments.strat_name_id, 
