@@ -230,25 +230,23 @@ subprocess.call("chmod 777 *.csv", shell=True)
 
 print "(2 of 8)   Importing into Postgres"
 pg_cur.execute(""" 
+DROP SCHEMA IF EXISTS macrostrat_new cascade;
+CREATE SCHEMA macrostrat_new;
 
-DROP SCHEMA IF EXISTS %(macrostrat_schema)s cascade;
-
-CREATE SCHEMA %(macrostrat_schema)s;
-
-CREATE TABLE %(macrostrat_schema)s.unit_strat_names (
+CREATE TABLE macrostrat_new.unit_strat_names (
   id serial PRIMARY KEY NOT NULL,
   unit_id integer NOT NULL,
   strat_name_id integer NOT NULL
 );
 
-COPY %(macrostrat_schema)s.unit_strat_names FROM %(unit_strat_names_path)s DELIMITER ',' CSV;
+COPY macrostrat_new.unit_strat_names FROM %(unit_strat_names_path)s DELIMITER ',' CSV;
 
-CREATE INDEX ON %(macrostrat_schema)s.unit_strat_names (id);
-CREATE INDEX ON %(macrostrat_schema)s.unit_strat_names (unit_id);
-CREATE INDEX ON %(macrostrat_schema)s.unit_strat_names (strat_name_id);
+CREATE INDEX ON macrostrat_new.unit_strat_names (id);
+CREATE INDEX ON macrostrat_new.unit_strat_names (unit_id);
+CREATE INDEX ON macrostrat_new.unit_strat_names (strat_name_id);
 
 
-CREATE TABLE %(macrostrat_schema)s.strat_names (
+CREATE TABLE macrostrat_new.strat_names (
   id serial PRIMARY KEY NOT NULL,
   strat_name character varying(100) NOT NULL,
   rank character varying(50),
@@ -256,24 +254,24 @@ CREATE TABLE %(macrostrat_schema)s.strat_names (
 );
 
 
-COPY %(macrostrat_schema)s.strat_names FROM %(strat_names_path)s DELIMITER ',' CSV;
+COPY macrostrat_new.strat_names FROM %(strat_names_path)s DELIMITER ',' CSV;
 
-CREATE TABLE %(macrostrat_schema)s.units_sections (
+CREATE TABLE macrostrat_new.units_sections (
   id serial PRIMARY KEY NOT NULL,
   unit_id integer NOT NULL,
   section_id integer NOT NULL,
   col_id integer NOT NULL
 );
 
-COPY %(macrostrat_schema)s.units_sections FROM %(units_sections_path)s DELIMITER ',' CSV;
+COPY macrostrat_new.units_sections FROM %(units_sections_path)s DELIMITER ',' CSV;
 
 
-CREATE INDEX ON %(macrostrat_schema)s.units_sections (id);
-CREATE INDEX ON %(macrostrat_schema)s.units_sections (unit_id);
-CREATE INDEX ON %(macrostrat_schema)s.units_sections (section_id);
-CREATE INDEX ON %(macrostrat_schema)s.units_sections (col_id);
+CREATE INDEX ON macrostrat_new.units_sections (id);
+CREATE INDEX ON macrostrat_new.units_sections (unit_id);
+CREATE INDEX ON macrostrat_new.units_sections (section_id);
+CREATE INDEX ON macrostrat_new.units_sections (col_id);
 
-CREATE TABLE %(macrostrat_schema)s.intervals (
+CREATE TABLE macrostrat_new.intervals (
   id serial NOT NULL,
   age_bottom numeric,
   age_top numeric,
@@ -283,28 +281,28 @@ CREATE TABLE %(macrostrat_schema)s.intervals (
   interval_color character varying(20)
 );
 
-COPY %(macrostrat_schema)s.intervals FROM %(intervals_path)s NULL '\N' DELIMITER ',' CSV;
+COPY macrostrat_new.intervals FROM %(intervals_path)s NULL '\N' DELIMITER ',' CSV;
 
-ALTER TABLE %(macrostrat_schema)s.intervals ADD COLUMN rank integer DEFAULT NULL;
+ALTER TABLE macrostrat_new.intervals ADD COLUMN rank integer DEFAULT NULL;
 
-INSERT INTO %(macrostrat_schema)s.intervals (id, interval_name, interval_color) VALUES (0, 'Age Unknown', '#737373'), (0, 'Unknown', '#737373');
+INSERT INTO macrostrat_new.intervals (id, interval_name, interval_color) VALUES (0, 'Age Unknown', '#737373'), (0, 'Unknown', '#737373');
 
-UPDATE %(macrostrat_schema)s.intervals SET rank = 6 WHERE interval_type = 'age';
-UPDATE %(macrostrat_schema)s.intervals SET rank = 5 WHERE interval_type = 'epoch';
-UPDATE %(macrostrat_schema)s.intervals SET rank = 4 WHERE interval_type = 'period';
-UPDATE %(macrostrat_schema)s.intervals SET rank = 3 WHERE interval_type = 'era';
-UPDATE %(macrostrat_schema)s.intervals SET rank = 2 WHERE interval_type = 'eon';
-UPDATE %(macrostrat_schema)s.intervals SET rank = 1 WHERE interval_type = 'supereon';
-UPDATE %(macrostrat_schema)s.intervals SET rank = 0 WHERE rank IS NULL;
+UPDATE macrostrat_new.intervals SET rank = 6 WHERE interval_type = 'age';
+UPDATE macrostrat_new.intervals SET rank = 5 WHERE interval_type = 'epoch';
+UPDATE macrostrat_new.intervals SET rank = 4 WHERE interval_type = 'period';
+UPDATE macrostrat_new.intervals SET rank = 3 WHERE interval_type = 'era';
+UPDATE macrostrat_new.intervals SET rank = 2 WHERE interval_type = 'eon';
+UPDATE macrostrat_new.intervals SET rank = 1 WHERE interval_type = 'supereon';
+UPDATE macrostrat_new.intervals SET rank = 0 WHERE rank IS NULL;
 
-CREATE INDEX ON %(macrostrat_schema)s.intervals (id);
-CREATE INDEX ON %(macrostrat_schema)s.intervals (age_top);
-CREATE INDEX ON %(macrostrat_schema)s.intervals (age_bottom);
-CREATE INDEX ON %(macrostrat_schema)s.intervals (interval_type);
-CREATE INDEX ON %(macrostrat_schema)s.intervals (interval_name);
+CREATE INDEX ON macrostrat_new.intervals (id);
+CREATE INDEX ON macrostrat_new.intervals (age_top);
+CREATE INDEX ON macrostrat_new.intervals (age_bottom);
+CREATE INDEX ON macrostrat_new.intervals (interval_type);
+CREATE INDEX ON macrostrat_new.intervals (interval_name);
 
 
-CREATE TABLE %(macrostrat_schema)s.lookup_unit_intervals (
+CREATE TABLE macrostrat_new.lookup_unit_intervals (
   unit_id integer,
   FO_age numeric,
   b_age numeric,
@@ -326,9 +324,9 @@ CREATE TABLE %(macrostrat_schema)s.lookup_unit_intervals (
   eon_id integer
 );
 
-COPY %(macrostrat_schema)s.lookup_unit_intervals FROM %(lookup_unit_intervals_path)s NULL '\N' DELIMITER ',' CSV;
+COPY macrostrat_new.lookup_unit_intervals FROM %(lookup_unit_intervals_path)s NULL '\N' DELIMITER ',' CSV;
 
-ALTER TABLE %(macrostrat_schema)s.lookup_unit_intervals ADD COLUMN best_interval_id integer;
+ALTER TABLE macrostrat_new.lookup_unit_intervals ADD COLUMN best_interval_id integer;
 
 WITH bests AS (
   select unit_id, 
@@ -346,19 +344,19 @@ WITH bests AS (
       ELSE
         0
     END
-   AS b_interval_id from %(macrostrat_schema)s.lookup_unit_intervals
+   AS b_interval_id from macrostrat_new.lookup_unit_intervals
 )
-UPDATE %(macrostrat_schema)s.lookup_unit_intervals lui
+UPDATE macrostrat_new.lookup_unit_intervals lui
 SET best_interval_id = b_interval_id
 FROM bests
 WHERE lui.unit_id = bests.unit_id;
 
-CREATE INDEX ON %(macrostrat_schema)s.lookup_unit_intervals (unit_id);
-CREATE INDEX ON %(macrostrat_schema)s.lookup_unit_intervals (best_interval_id);
+CREATE INDEX ON macrostrat_new.lookup_unit_intervals (unit_id);
+CREATE INDEX ON macrostrat_new.lookup_unit_intervals (best_interval_id);
 
 
 
-CREATE TABLE %(macrostrat_schema)s.units (
+CREATE TABLE macrostrat_new.units (
   id integer PRIMARY KEY,
   strat_name character varying(150),
   color character varying(20),
@@ -375,17 +373,17 @@ CREATE TABLE %(macrostrat_schema)s.units (
   col_id integer
 );
 
-COPY %(macrostrat_schema)s.units FROM %(units_path)s DELIMITER ',' CSV;
+COPY macrostrat_new.units FROM %(units_path)s DELIMITER ',' CSV;
 
 
-CREATE INDEX ON %(macrostrat_schema)s.units (id);
-CREATE INDEX ON %(macrostrat_schema)s.units (section_id);
-CREATE INDEX ON %(macrostrat_schema)s.units (col_id);
-CREATE INDEX ON %(macrostrat_schema)s.units (strat_name);
-CREATE INDEX ON %(macrostrat_schema)s.units (color);
+CREATE INDEX ON macrostrat_new.units (id);
+CREATE INDEX ON macrostrat_new.units (section_id);
+CREATE INDEX ON macrostrat_new.units (col_id);
+CREATE INDEX ON macrostrat_new.units (strat_name);
+CREATE INDEX ON macrostrat_new.units (color);
 
 
-CREATE TABLE %(macrostrat_schema)s.lookup_strat_names (
+CREATE TABLE macrostrat_new.lookup_strat_names (
   strat_name_id integer,
   strat_name character varying(100),
   rank character varying(20),
@@ -405,19 +403,19 @@ CREATE TABLE %(macrostrat_schema)s.lookup_strat_names (
   gsc_lexicon character varying(20)
 );
 
-COPY %(macrostrat_schema)s.lookup_strat_names FROM %(lookup_strat_names_path)s NULL '\N' DELIMITER ',' CSV;
+COPY macrostrat_new.lookup_strat_names FROM %(lookup_strat_names_path)s NULL '\N' DELIMITER ',' CSV;
 
 
-CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (strat_name_id);
-CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (bed_id);
-CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (mbr_id);
-CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (fm_id);
-CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (gp_id);
-CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (sgp_id);
-CREATE INDEX ON %(macrostrat_schema)s.lookup_strat_names (strat_name);
+CREATE INDEX ON macrostrat_new.lookup_strat_names (strat_name_id);
+CREATE INDEX ON macrostrat_new.lookup_strat_names (bed_id);
+CREATE INDEX ON macrostrat_new.lookup_strat_names (mbr_id);
+CREATE INDEX ON macrostrat_new.lookup_strat_names (fm_id);
+CREATE INDEX ON macrostrat_new.lookup_strat_names (gp_id);
+CREATE INDEX ON macrostrat_new.lookup_strat_names (sgp_id);
+CREATE INDEX ON macrostrat_new.lookup_strat_names (strat_name);
 
 
-CREATE TABLE %(macrostrat_schema)s.cols (
+CREATE TABLE macrostrat_new.cols (
   id integer PRIMARY KEY,
   col_group_id smallint,
   project_id smallint,
@@ -433,44 +431,44 @@ CREATE TABLE %(macrostrat_schema)s.cols (
   created text
 );
 
-COPY %(macrostrat_schema)s.cols FROM %(cols_path)s NULL '\N' DELIMITER ',' CSV;
+COPY macrostrat_new.cols FROM %(cols_path)s NULL '\N' DELIMITER ',' CSV;
 
-UPDATE %(macrostrat_schema)s.cols SET coordinate = ST_GeomFromText(wkt);
-UPDATE %(macrostrat_schema)s.cols SET coordinate = ST_GeomFromText(wkt);
-CREATE INDEX ON %(macrostrat_schema)s.cols (id);
-CREATE INDEX ON %(macrostrat_schema)s.cols (project_id);
-CREATE INDEX ON %(macrostrat_schema)s.cols USING GIST (coordinate);
-CREATE INDEX ON %(macrostrat_schema)s.cols (col_group_id);
-CREATE INDEX ON %(macrostrat_schema)s.cols (status_code);
+UPDATE macrostrat_new.cols SET coordinate = ST_GeomFromText(wkt);
+UPDATE macrostrat_new.cols SET coordinate = ST_GeomFromText(wkt);
+CREATE INDEX ON macrostrat_new.cols (id);
+CREATE INDEX ON macrostrat_new.cols (project_id);
+CREATE INDEX ON macrostrat_new.cols USING GIST (coordinate);
+CREATE INDEX ON macrostrat_new.cols (col_group_id);
+CREATE INDEX ON macrostrat_new.cols (status_code);
 
 
-CREATE TABLE %(macrostrat_schema)s.col_areas (
+CREATE TABLE macrostrat_new.col_areas (
   id integer PRIMARY KEY,
   col_id integer,
   col_area geometry,
   wkt text
 );
 
-COPY %(macrostrat_schema)s.col_areas FROM %(col_areas_path)s NULL '\N' DELIMITER ',' CSV;
+COPY macrostrat_new.col_areas FROM %(col_areas_path)s NULL '\N' DELIMITER ',' CSV;
 
-UPDATE %(macrostrat_schema)s.col_areas SET col_area = ST_GeomFromText(wkt);
+UPDATE macrostrat_new.col_areas SET col_area = ST_GeomFromText(wkt);
 
-CREATE INDEX ON %(macrostrat_schema)s.col_areas (col_id);
-CREATE INDEX ON %(macrostrat_schema)s.col_areas USING GIST (col_area);
+CREATE INDEX ON macrostrat_new.col_areas (col_id);
+CREATE INDEX ON macrostrat_new.col_areas USING GIST (col_area);
 
 
-ALTER TABLE %(macrostrat_schema)s.cols ADD COLUMN poly_geom geometry;
-UPDATE %(macrostrat_schema)s.cols AS c
+ALTER TABLE macrostrat_new.cols ADD COLUMN poly_geom geometry;
+UPDATE macrostrat_new.cols AS c
 SET poly_geom = a.col_area
-FROM %(macrostrat_schema)s.col_areas a
+FROM macrostrat_new.col_areas a
 WHERE c.id = a.col_id;
 
-UPDATE %(macrostrat_schema)s.cols SET poly_geom = ST_SetSRID(poly_geom, 4326);
+UPDATE macrostrat_new.cols SET poly_geom = ST_SetSRID(poly_geom, 4326);
 
-CREATE INDEX ON %(macrostrat_schema)s.cols USING GIST (poly_geom);
+CREATE INDEX ON macrostrat_new.cols USING GIST (poly_geom);
 
 
-CREATE TABLE %(macrostrat_schema)s.liths (
+CREATE TABLE macrostrat_new.liths (
   id integer PRIMARY KEY NOT NULL,
   lith character varying(75),
   lith_type character varying(50),
@@ -481,36 +479,35 @@ CREATE TABLE %(macrostrat_schema)s.liths (
   bulk_density numeric,
   lith_color character varying(12)
 );
-COPY %(macrostrat_schema)s.liths FROM %(liths_path)s NULL '\N' DELIMITER ',' CSV;
+COPY macrostrat_new.liths FROM %(liths_path)s NULL '\N' DELIMITER ',' CSV;
 
-CREATE INDEX ON %(macrostrat_schema)s.liths (id);
-CREATE INDEX ON %(macrostrat_schema)s.liths (lith);
-CREATE INDEX ON %(macrostrat_schema)s.liths (lith_class);
-CREATE INDEX ON %(macrostrat_schema)s.liths (lith_type);
+CREATE INDEX ON macrostrat_new.liths (id);
+CREATE INDEX ON macrostrat_new.liths (lith);
+CREATE INDEX ON macrostrat_new.liths (lith_class);
+CREATE INDEX ON macrostrat_new.liths (lith_type);
 
 
-CREATE TABLE %(macrostrat_schema)s.lith_atts (
+CREATE TABLE macrostrat_new.lith_atts (
   id integer PRIMARY KEY NOT NULL,
   lith_att character varying(75),
   att_type character varying(25),
   lith_att_fill integer
 );
-COPY %(macrostrat_schema)s.lith_atts FROM %(lith_atts_path)s NULL '\N' DELIMITER ',' CSV;
+COPY macrostrat_new.lith_atts FROM %(lith_atts_path)s NULL '\N' DELIMITER ',' CSV;
 
-CREATE INDEX ON %(macrostrat_schema)s.lith_atts (id);
-CREATE INDEX ON %(macrostrat_schema)s.lith_atts (att_type);
-CREATE INDEX ON %(macrostrat_schema)s.lith_atts (lith_att);
+CREATE INDEX ON macrostrat_new.lith_atts (id);
+CREATE INDEX ON macrostrat_new.lith_atts (att_type);
+CREATE INDEX ON macrostrat_new.lith_atts (lith_att);
 
 
-CREATE TABLE %(macrostrat_schema)s.timescales_intervals (
+CREATE TABLE macrostrat_new.timescales_intervals (
   timescale_id integer,
   interval_id integer
 );
-COPY %(macrostrat_schema)s.timescales_intervals FROM %(timescales_intervals_path)s NULL '\N' DELIMITER ',' CSV;
+COPY macrostrat_new.timescales_intervals FROM %(timescales_intervals_path)s NULL '\N' DELIMITER ',' CSV;
 
-CREATE INDEX ON %(macrostrat_schema)s.timescales_intervals (timescale_id);
-CREATE INDEX ON %(macrostrat_schema)s.timescales_intervals (interval_id);
-
+CREATE INDEX ON macrostrat_new.timescales_intervals (timescale_id);
+CREATE INDEX ON macrostrat_new.timescales_intervals (interval_id);
 """, params)
 pg_conn.commit()
 
@@ -520,18 +517,23 @@ pg_conn.commit()
 
 print "(3 of 8)   Vacuuming macrostrat"
 pg_conn.set_isolation_level(0)
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.unit_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.units_sections;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.intervals;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.lookup_unit_intervals;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.units;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.lookup_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.cols;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.col_areas;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.liths;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE %(macrostrat_schema)s.lith_atts;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.unit_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.units_sections;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.intervals;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.lookup_unit_intervals;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.units;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.lookup_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.cols;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.col_areas;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.liths;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.lith_atts;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("""
+  DROP SCHEMA IF EXISTS %(macrostrat_schema)s cascade;
+  ALTER SCHEMA macrostrat_new RENAME TO %(macrostrat_schema)s;
+""", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)} )
 pg_conn.commit()
+
 
 subprocess.call("rm *.csv", shell=True)
 
@@ -541,20 +543,21 @@ subprocess.call("rm *.csv", shell=True)
 
 print "(4 of 8)   Rebuilding gmna.lookup_units"
 pg_cur.execute("""
-  DROP TABLE IF EXISTS gmna.interval_normalize;
-
-  CREATE TABLE gmna.interval_normalize AS
+  
+  CREATE TABLE gmna.interval_normalize_new AS
     WITH gmna_age AS (select distinct min_age AS gmna_interval from gmna.geologic_units where lower(min_age) IN (SELECT distinct lower(interval_name) from macrostrat.intervals) order by min_age asc),
          macro_age AS (select distinct min_age AS macro_interval from gmna.geologic_units where lower(min_age) IN (SELECT distinct lower(interval_name) from macrostrat.intervals) order by min_age asc)
 
     SELECT * FROM gmna_age
     JOIN macro_age on gmna_age.gmna_interval = macro_age.macro_interval;
 
-  COPY gmna.interval_normalize FROM %(age_mapping)s DELIMITER ',' CSV;
+  COPY gmna.interval_normalize_new FROM %(age_mapping)s DELIMITER ',' CSV;
 
-  DROP TABLE IF EXISTS gmna.lookup_units;
+  DROP TABLE IF EXISTS gmna.interval_normalize;
+  ALTER TABLE gmna.interval_normalize_new RENAME TO interval_normalize;
 
-  CREATE TABLE gmna.lookup_units AS 
+
+  CREATE TABLE gmna.lookup_units_new AS 
     SELECT 
       gid, 
       unit_abbre, 
@@ -579,14 +582,17 @@ pg_cur.execute("""
     JOIN %(macrostrat_schema)s.intervals max ON gin_max.macro_interval = max.interval_name
     JOIN %(macrostrat_schema)s.liths l ON gu.macro_lith_id = l.id;
 
-  CREATE INDEX ON gmna.lookup_units (gid);
-  CREATE INDEX ON gmna.lookup_units (lith_type);
-  CREATE INDEX ON gmna.lookup_units (lith_class);
-  CREATE INDEX ON gmna.lookup_units (min_age);
-  CREATE INDEX ON gmna.lookup_units (max_age);
-  CREATE INDEX ON gmna.lookup_units USING GIST (geom);
+  CREATE INDEX ON gmna.lookup_units_new (gid);
+  CREATE INDEX ON gmna.lookup_units_new (lith_type);
+  CREATE INDEX ON gmna.lookup_units_new (lith_class);
+  CREATE INDEX ON gmna.lookup_units_new (min_age);
+  CREATE INDEX ON gmna.lookup_units_new (max_age);
+  CREATE INDEX ON gmna.lookup_units_new USING GIST (geom);
 
-""", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema), "age_mapping": os.getcwd() + "/gmna/age_mapping.csv"})
+  DROP TABLE IF EXISTS gmna.lookup_units;
+  ALTER TABLE gmna.lookup_units_new RENAME TO lookup_units;
+
+""", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema), "age_mapping": (os.getcwd() + "/gmna/age_mapping.csv")})
 pg_conn.commit()
 
 
@@ -594,9 +600,9 @@ pg_conn.commit()
 
 
 print "(5 of 8)   Rebuilding gmus.best_geounits_macrounits"
-pg_cur.execute(""" 
-  DROP TABLE IF EXISTS gmus.best_geounits_macrounits;
-  CREATE TABLE gmus.best_geounits_macrounits AS 
+pg_cur.execute("""
+
+  CREATE TABLE gmus.best_geounits_macrounits_new AS 
   WITH a AS (
      SELECT DISTINCT ON (geounits_macrounits.geologic_unit_gid) geounits_macrounits.geologic_unit_gid, unit_link, array_agg(geounits_macrounits.unit_id) AS best_units
       FROM gmus.geounits_macrounits
@@ -628,11 +634,14 @@ pg_cur.execute("""
   ) macro_interval_id
   FROM result;
 
-  CREATE INDEX ON gmus.best_geounits_macrounits (geologic_unit_gid);
-  CREATE INDEX ON gmus.best_geounits_macrounits (best_units);
-  CREATE INDEX ON gmus.best_geounits_macrounits (t_age);
-  CREATE INDEX ON gmus.best_geounits_macrounits (b_age);
-  CREATE INDEX ON gmus.best_geounits_macrounits (macro_interval_id);
+  CREATE INDEX ON gmus.best_geounits_macrounits_new (geologic_unit_gid);
+  CREATE INDEX ON gmus.best_geounits_macrounits_new (best_units);
+  CREATE INDEX ON gmus.best_geounits_macrounits_new (t_age);
+  CREATE INDEX ON gmus.best_geounits_macrounits_new (b_age);
+  CREATE INDEX ON gmus.best_geounits_macrounits_new (macro_interval_id);
+
+  DROP TABLE IF EXISTS gmus.best_geounits_macrounits;
+  ALTER TABLE gmus.best_geounits_macrounits_new RENAME TO best_geounits_macrounits;
 """)
 pg_conn.commit()
 
@@ -642,9 +651,8 @@ pg_conn.commit()
 
 print "(6 of 8)   Rebuilding gmus.lookup_units"
 pg_cur.execute("""
-    DROP TABLE IF EXISTS gmus.lookup_units;
-
-    CREATE TABLE gmus.lookup_units AS 
+    
+    CREATE TABLE gmus.lookup_units_new AS 
     SELECT 
       gid, 
       gu.state, 
@@ -683,17 +691,20 @@ pg_cur.execute("""
     LEFT JOIN gmus.best_geounits_macrounits bgm ON gu.gid = bgm.geologic_unit_gid
     LEFT JOIN %(macrostrat_schema)s.intervals i2 ON bgm.macro_interval_id = i2.id;
 
-    UPDATE gmus.lookup_units SET macro_color = interval_color WHERE macro_color IS null;
+    UPDATE gmus.lookup_units_new SET macro_color = interval_color WHERE macro_color IS null;
 
-    CREATE INDEX ON gmus.lookup_units (gid);
-    CREATE INDEX ON gmus.lookup_units (state);
-    CREATE INDEX ON gmus.lookup_units (unit_link);
-    CREATE INDEX ON gmus.lookup_units (macro_interval_id);
-    CREATE INDEX ON gmus.lookup_units (unit_name);
-    CREATE INDEX ON gmus.lookup_units (age_bottom);
-    CREATE INDEX ON gmus.lookup_units (age_top);
-    CREATE INDEX ON gmus.lookup_units USING GIST (geom);
-    CREATE INDEX ON gmus.lookup_units USING GIN (text_search);
+    CREATE INDEX ON gmus.lookup_units_new (gid);
+    CREATE INDEX ON gmus.lookup_units_new (state);
+    CREATE INDEX ON gmus.lookup_units_new (unit_link);
+    CREATE INDEX ON gmus.lookup_units_new (macro_interval_id);
+    CREATE INDEX ON gmus.lookup_units_new (unit_name);
+    CREATE INDEX ON gmus.lookup_units_new (age_bottom);
+    CREATE INDEX ON gmus.lookup_units_new (age_top);
+    CREATE INDEX ON gmus.lookup_units_new USING GIST (geom);
+    CREATE INDEX ON gmus.lookup_units_new USING GIN (text_search);
+
+    DROP TABLE IF EXISTS gmus.lookup_units;
+    ALTER TABLE gmus.lookup_units_new RENAME TO lookup_units;
 
 """, {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_conn.commit()
