@@ -142,74 +142,85 @@ params = {
 print "(1 of 8)   Dumping from MySQL"
 my_cur.execute("""
 
-  SELECT * FROM unit_strat_names
+  SELECT id, unit_id, strat_name_id 
+  FROM unit_strat_names
   INTO OUTFILE %(unit_strat_names_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT * FROM strat_names
+  SELECT id, strat_name, rank, ref_id 
+  FROM strat_names
   INTO OUTFILE %(strat_names_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT * FROM units_sections
+  SELECT id, unit_id, section_id, col_id 
+  FROM units_sections
   INTO OUTFILE %(units_sections_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-
-  SELECT * FROM intervals
+  SELECT id, age_bottom, age_top, interval_name, interval_abbrev, interval_type, interval_color 
+  FROM intervals
   INTO OUTFILE %(intervals_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT * FROM lookup_unit_intervals
+  SELECT unit_id, fo_age, b_age, fo_interval, fo_period, lo_age, t_age, lo_interval, lo_period, age, age_id, epoch, epoch_id, period, period_id, era, era_id, eon, eon_id 
+  FROM lookup_unit_intervals
   INTO OUTFILE %(lookup_unit_intervals_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT id, strat_name, color, outcrop, FO, FO_h, LO, LO_h, position_bottom, position_top, max_thick, min_thick, section_id, col_id FROM units
+  SELECT id, strat_name, color, outcrop, FO, FO_h, LO, LO_h, position_bottom, position_top, max_thick, min_thick, section_id, col_id 
+  FROM units
   INTO OUTFILE %(units_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT * FROM lookup_strat_names
+  SELECT strat_name_id, strat_name, rank, rank_name, bed_id, bed_name, mbr_id, mbr_name, fm_id, fm_name, gp_id, gp_name, sgp_id, sgp_name, early_age, late_age, gsc_lexicon 
+  FROM lookup_strat_names
   INTO OUTFILE %(lookup_strat_names_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT id, col_group_id, project_id, status_code, col_position, col, col_name, lat, lng, col_area, null AS coordinate, ST_AsText(coordinate) AS wkt, created FROM cols
+  SELECT id, col_group_id, project_id, status_code, col_position, col, col_name, lat, lng, col_area, null AS coordinate, ST_AsText(coordinate) AS wkt, created 
+  FROM cols
   INTO OUTFILE %(cols_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT id, col_id, null as col_area, ST_AsText(col_area) AS wkt FROM col_areas
+  SELECT id, col_id, null as col_area, ST_AsText(col_area) AS wkt 
+  FROM col_areas
   INTO OUTFILE %(col_areas_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT * FROM liths
+  SELECT id, lith, lith_type, lith_class, lith_fill, comp_coef, initial_porosity, bulk_density, lith_color 
+  FROM liths
   INTO OUTFILE %(liths_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT * FROM lith_atts
+  SELECT id, lith_att, att_type, lith_att_fill 
+  FROM lith_atts
   INTO OUTFILE %(lith_atts_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT * FROM timescales_intervals
+  SELECT timescale_id, interval_id 
+  FROM timescales_intervals
   INTO OUTFILE %(timescales_intervals_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
