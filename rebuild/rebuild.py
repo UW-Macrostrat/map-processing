@@ -133,6 +133,8 @@ params = {
   "liths_path": directory + "/liths.csv",
   "lith_atts_path": directory + "/lith_atts.csv",
   "timescales_intervals_path": directory + "/timescales_intervals.csv",
+  "unit_liths_path": directory + "/unit_liths.csv",
+  "lookup_unit_liths_path": directory + "/lookup_unit_liths.csv",
   "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)
 }
 
@@ -222,6 +224,20 @@ my_cur.execute("""
   SELECT timescale_id, interval_id 
   FROM timescales_intervals
   INTO OUTFILE %(timescales_intervals_path)s
+  FIELDS TERMINATED BY ','
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n';
+
+  SELECT id, lith_id, unit_id, prop, dom, comp_prop, mod_prop, toc, ref_id
+  FROM unit_liths
+  INTO OUTFILE %(unit_liths_path)s
+  FIELDS TERMINATED BY '\t'
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n';
+
+  SELECT unit_id, lith_class, lith_type, lith_short, lith_long, environ_class, environ_type, environ
+  FROM lookup_unit_liths
+  INTO OUTFILE %(lookup_unit_liths_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
@@ -519,6 +535,43 @@ COPY macrostrat_new.timescales_intervals FROM %(timescales_intervals_path)s NULL
 
 CREATE INDEX ON macrostrat_new.timescales_intervals (timescale_id);
 CREATE INDEX ON macrostrat_new.timescales_intervals (interval_id);
+
+
+CREATE TABLE macrostrat_new.unit_liths (
+  id integer,
+  lith_id integer,
+  unit_id integer,
+  prop text,
+  dom character varying(10),
+  comp_prop numeric,
+  mod_prop numeric,
+  toc numeric,
+  ref_id integer
+); 
+
+COPY macrostrat_new.unit_liths FROM %(unit_liths_path)s NULL '\N' DELIMITER '\t' CSV;
+
+CREATE INDEX ON macrostrat_new.unit_liths (id);
+CREATE INDEX ON macrostrat_new.unit_liths (unit_id);
+CREATE INDEX ON macrostrat_new.unit_liths (lith_id);
+CREATE INDEX ON macrostrat_new.unit_liths (ref_id);
+
+
+
+CREATE TABLE macrostrat_new.lookup_unit_liths (
+  unit_id integer,
+  lith_class character varying(100),
+  lith_type character varying(100),
+  lith_short character varying(255),
+  lith_long character varying(255),
+  environ_class character varying(100),
+  environ_type character varying(100),
+  environ character varying(255)
+);
+
+COPY macrostrat_new.lookup_unit_liths FROM %(lookup_unit_liths_path)s NULL '\N' DELIMITER ',' CSV;
+
+CREATE INDEX ON macrostrat_new.lookup_unit_liths (unit_id);
 """, params)
 pg_conn.commit()
 
