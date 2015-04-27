@@ -24,10 +24,10 @@ if (arguments.map_type not in ["gmus", "gmna", "gmus-faults", "gmna-faults"]) :
 
 
 # Rebuild the Postgres database to make sure everything is up to date
-#execfile(os.path.dirname(os.path.realpath(sys.argv[0])) + "/rebuild.py")
+execfile(os.path.dirname(os.path.realpath(sys.argv[0])) + "/rebuild.py")
 
 # styles.py
-#execfile(os.path.dirname(os.path.realpath(sys.argv[0])) + "/styles.py")
+execfile(os.path.dirname(os.path.realpath(sys.argv[0])) + "/styles.py")
 
 # Roll dem tiles
 config = {
