@@ -1,0 +1,1153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Map>
+<Map srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over" background-color="rgba(0, 0, 0, 0)">
+
+<Layer name="gmus" status="on" srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+  <StyleName>gmus</StyleName>
+  <Datasource>
+     <Parameter name="type"><![CDATA[postgis]]></Parameter>
+     <Parameter name="table"><![CDATA[(SELECT gid, macro_color, geom from gmus.lookup_units) AS data]]></Parameter>
+     <Parameter name="key_field"><![CDATA[gid]]></Parameter>
+     <Parameter name="geometry_field"><![CDATA[geom]]></Parameter>
+     <Parameter name="extent_cache"><![CDATA[auto]]></Parameter>
+     <Parameter name="extent"><![CDATA[-126.488422097817,24.2764737404176,-66.7433374647366,49.3845234431582]]></Parameter>
+     <Parameter name="host"><![CDATA[localhost]]></Parameter>
+     <Parameter name="port"><![CDATA[5432]]></Parameter>
+     <Parameter name="user"><![CDATA[john]]></Parameter>
+     <Parameter name="dbname"><![CDATA[geomacro]]></Parameter>
+  </Datasource>
+</Layer>
+
+<Style name="gmus" filter-mode="first">
+ 
+<Rule>
+  <Filter>([macro_color] = '#4EB3D3')</Filter>
+  <PolygonSymbolizer fill="#4EB3D3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#7FC64E')</Filter>
+  <PolygonSymbolizer fill="#7FC64E" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E36350')</Filter>
+  <PolygonSymbolizer fill="#E36350" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#8CB06C')</Filter>
+  <PolygonSymbolizer fill="#8CB06C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E5D075')</Filter>
+  <PolygonSymbolizer fill="#E5D075" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#ACC9BC')</Filter>
+  <PolygonSymbolizer fill="#ACC9BC" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFE7F1')</Filter>
+  <PolygonSymbolizer fill="#BFE7F1" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F74370')</Filter>
+  <PolygonSymbolizer fill="#F74370" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A6DCB5')</Filter>
+  <PolygonSymbolizer fill="#A6DCB5" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FDA75F')</Filter>
+  <PolygonSymbolizer fill="#FDA75F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E36956')</Filter>
+  <PolygonSymbolizer fill="#E36956" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF59')</Filter>
+  <PolygonSymbolizer fill="#FFFF59" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#CCEBAE')</Filter>
+  <PolygonSymbolizer fill="#CCEBAE" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFD99D')</Filter>
+  <PolygonSymbolizer fill="#BFD99D" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F3CC8A')</Filter>
+  <PolygonSymbolizer fill="#F3CC8A" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#CCE968')</Filter>
+  <PolygonSymbolizer fill="#CCE968" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#C99BCB')</Filter>
+  <PolygonSymbolizer fill="#C99BCB" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFE48A')</Filter>
+  <PolygonSymbolizer fill="#BFE48A" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#27A37F')</Filter>
+  <PolygonSymbolizer fill="#27A37F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FD9A52')</Filter>
+  <PolygonSymbolizer fill="#FD9A52" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3E3EE')</Filter>
+  <PolygonSymbolizer fill="#B3E3EE" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF6D')</Filter>
+  <PolygonSymbolizer fill="#FFFF6D" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#EBEBEB')</Filter>
+  <PolygonSymbolizer fill="#EBEBEB" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#998E4F')</Filter>
+  <PolygonSymbolizer fill="#998E4F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF66')</Filter>
+  <PolygonSymbolizer fill="#FFFF66" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#EF5845')</Filter>
+  <PolygonSymbolizer fill="#EF5845" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A6DDE0')</Filter>
+  <PolygonSymbolizer fill="#A6DDE0" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#9DD8A3')</Filter>
+  <PolygonSymbolizer fill="#9DD8A3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FEB342')</Filter>
+  <PolygonSymbolizer fill="#FEB342" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F1CE78')</Filter>
+  <PolygonSymbolizer fill="#F1CE78" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#99D69F')</Filter>
+  <PolygonSymbolizer fill="#99D69F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E27C88')</Filter>
+  <PolygonSymbolizer fill="#E27C88" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3CA8E')</Filter>
+  <PolygonSymbolizer fill="#B3CA8E" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#139B77')</Filter>
+  <PolygonSymbolizer fill="#139B77" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E3B9DB')</Filter>
+  <PolygonSymbolizer fill="#E3B9DB" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F2F91D')</Filter>
+  <PolygonSymbolizer fill="#F2F91D" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F1C868')</Filter>
+  <PolygonSymbolizer fill="#F1C868" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFE6C3')</Filter>
+  <PolygonSymbolizer fill="#BFE6C3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FEBF4E')</Filter>
+  <PolygonSymbolizer fill="#FEBF4E" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF4D')</Filter>
+  <PolygonSymbolizer fill="#FFFF4D" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A6D84A')</Filter>
+  <PolygonSymbolizer fill="#A6D84A" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E36F5C')</Filter>
+  <PolygonSymbolizer fill="#E36F5C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#009270')</Filter>
+  <PolygonSymbolizer fill="#009270" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F99BC1')</Filter>
+  <PolygonSymbolizer fill="#F99BC1" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF60')</Filter>
+  <PolygonSymbolizer fill="#FFFF60" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D9F0BB')</Filter>
+  <PolygonSymbolizer fill="#D9F0BB" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#94D49B')</Filter>
+  <PolygonSymbolizer fill="#94D49B" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A6B96C')</Filter>
+  <PolygonSymbolizer fill="#A6B96C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#67C5CA')</Filter>
+  <PolygonSymbolizer fill="#67C5CA" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFF2AE')</Filter>
+  <PolygonSymbolizer fill="#FFF2AE" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FDC091')</Filter>
+  <PolygonSymbolizer fill="#FDC091" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FB9A85')</Filter>
+  <PolygonSymbolizer fill="#FB9A85" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#80CFD8')</Filter>
+  <PolygonSymbolizer fill="#80CFD8" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#86CDA5')</Filter>
+  <PolygonSymbolizer fill="#86CDA5" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B5BE6B')</Filter>
+  <PolygonSymbolizer fill="#B5BE6B" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F75B89')</Filter>
+  <PolygonSymbolizer fill="#F75B89" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFECA5')</Filter>
+  <PolygonSymbolizer fill="#FFECA5" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F9F97F')</Filter>
+  <PolygonSymbolizer fill="#F9F97F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A0B76C')</Filter>
+  <PolygonSymbolizer fill="#A0B76C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3E2E3')</Filter>
+  <PolygonSymbolizer fill="#B3E2E3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#67BCD8')</Filter>
+  <PolygonSymbolizer fill="#67BCD8" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#99C078')</Filter>
+  <PolygonSymbolizer fill="#99C078" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#99C08D')</Filter>
+  <PolygonSymbolizer fill="#99C08D" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A6C583')</Filter>
+  <PolygonSymbolizer fill="#A6C583" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#EE7E79')</Filter>
+  <PolygonSymbolizer fill="#EE7E79" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#CCECDD')</Filter>
+  <PolygonSymbolizer fill="#CCECDD" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#33A97E')</Filter>
+  <PolygonSymbolizer fill="#33A97E" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#67A599')</Filter>
+  <PolygonSymbolizer fill="#67A599" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#CCEBD1')</Filter>
+  <PolygonSymbolizer fill="#CCEBD1" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FCC0B2')</Filter>
+  <PolygonSymbolizer fill="#FCC0B2" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F2EDC5')</Filter>
+  <PolygonSymbolizer fill="#F2EDC5" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#CCDFAA')</Filter>
+  <PolygonSymbolizer fill="#CCDFAA" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FCA773')</Filter>
+  <PolygonSymbolizer fill="#FCA773" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E5AC4D')</Filter>
+  <PolygonSymbolizer fill="#E5AC4D" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FDB462')</Filter>
+  <PolygonSymbolizer fill="#FDB462" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A6C093')</Filter>
+  <PolygonSymbolizer fill="#A6C093" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#8CD094')</Filter>
+  <PolygonSymbolizer fill="#8CD094" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#CCECF4')</Filter>
+  <PolygonSymbolizer fill="#CCECF4" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#7FCA93')</Filter>
+  <PolygonSymbolizer fill="#7FCA93" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FB8D76')</Filter>
+  <PolygonSymbolizer fill="#FB8D76" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F74F7C')</Filter>
+  <PolygonSymbolizer fill="#F74F7C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3E1B6')</Filter>
+  <PolygonSymbolizer fill="#B3E1B6" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#CB8C37')</Filter>
+  <PolygonSymbolizer fill="#CB8C37" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D9EF74')</Filter>
+  <PolygonSymbolizer fill="#D9EF74" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFF2D3')</Filter>
+  <PolygonSymbolizer fill="#FFF2D3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#41B087')</Filter>
+  <PolygonSymbolizer fill="#41B087" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFC26B')</Filter>
+  <PolygonSymbolizer fill="#BFC26B" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#5ABC8C')</Filter>
+  <PolygonSymbolizer fill="#5ABC8C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D6AAD3')</Filter>
+  <PolygonSymbolizer fill="#D6AAD3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F1E19D')</Filter>
+  <PolygonSymbolizer fill="#F1E19D" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#99B575')</Filter>
+  <PolygonSymbolizer fill="#99B575" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#CCEA97')</Filter>
+  <PolygonSymbolizer fill="#CCEA97" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D9F1F7')</Filter>
+  <PolygonSymbolizer fill="#D9F1F7" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E6F47F')</Filter>
+  <PolygonSymbolizer fill="#E6F47F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFF0BD')</Filter>
+  <PolygonSymbolizer fill="#FFF0BD" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3E1C2')</Filter>
+  <PolygonSymbolizer fill="#B3E1C2" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A4DAA9')</Filter>
+  <PolygonSymbolizer fill="#A4DAA9" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E5B75A')</Filter>
+  <PolygonSymbolizer fill="#E5B75A" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E3816F')</Filter>
+  <PolygonSymbolizer fill="#E3816F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF33')</Filter>
+  <PolygonSymbolizer fill="#FFFF33" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B051A5')</Filter>
+  <PolygonSymbolizer fill="#B051A5" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3D492')</Filter>
+  <PolygonSymbolizer fill="#B3D492" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#99D36A')</Filter>
+  <PolygonSymbolizer fill="#99D36A" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D9EABA')</Filter>
+  <PolygonSymbolizer fill="#D9EABA" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFEDB3')</Filter>
+  <PolygonSymbolizer fill="#FFEDB3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFE6CF')</Filter>
+  <PolygonSymbolizer fill="#BFE6CF" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FDBF6F')</Filter>
+  <PolygonSymbolizer fill="#FDBF6F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3CBBE')</Filter>
+  <PolygonSymbolizer fill="#B3CBBE" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFD0C3')</Filter>
+  <PolygonSymbolizer fill="#BFD0C3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D57998')</Filter>
+  <PolygonSymbolizer fill="#D57998" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF99')</Filter>
+  <PolygonSymbolizer fill="#FFFF99" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#C983BF')</Filter>
+  <PolygonSymbolizer fill="#C983BF" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3E095')</Filter>
+  <PolygonSymbolizer fill="#B3E095" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#99D7B3')</Filter>
+  <PolygonSymbolizer fill="#99D7B3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E38776')</Filter>
+  <PolygonSymbolizer fill="#E38776" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D9F0DF')</Filter>
+  <PolygonSymbolizer fill="#D9F0DF" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#678F66')</Filter>
+  <PolygonSymbolizer fill="#678F66" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B5B5B5')</Filter>
+  <PolygonSymbolizer fill="#B5B5B5" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FECC5C')</Filter>
+  <PolygonSymbolizer fill="#FECC5C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FB8069')</Filter>
+  <PolygonSymbolizer fill="#FB8069" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FDCDA1')</Filter>
+  <PolygonSymbolizer fill="#FDCDA1" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#8FD297')</Filter>
+  <PolygonSymbolizer fill="#8FD297" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F1E185')</Filter>
+  <PolygonSymbolizer fill="#F1E185" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D3E5B2')</Filter>
+  <PolygonSymbolizer fill="#D3E5B2" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FEE9B2')</Filter>
+  <PolygonSymbolizer fill="#FEE9B2" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFB777')</Filter>
+  <PolygonSymbolizer fill="#BFB777" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#34B2C9')</Filter>
+  <PolygonSymbolizer fill="#34B2C9" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#DA037F')</Filter>
+  <PolygonSymbolizer fill="#DA037F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A6BA80')</Filter>
+  <PolygonSymbolizer fill="#A6BA80" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A6A6A6')</Filter>
+  <PolygonSymbolizer fill="#A6A6A6" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F1D576')</Filter>
+  <PolygonSymbolizer fill="#F1D576" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F0047F')</Filter>
+  <PolygonSymbolizer fill="#F0047F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FCB4A2')</Filter>
+  <PolygonSymbolizer fill="#FCB4A2" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFFB9')</Filter>
+  <PolygonSymbolizer fill="#FFFFB9" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#99C2B5')</Filter>
+  <PolygonSymbolizer fill="#99C2B5" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFFBF')</Filter>
+  <PolygonSymbolizer fill="#FFFFBF" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFF2C7')</Filter>
+  <PolygonSymbolizer fill="#FFF2C7" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF73')</Filter>
+  <PolygonSymbolizer fill="#FFFF73" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#C5816F')</Filter>
+  <PolygonSymbolizer fill="#C5816F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F04370')</Filter>
+  <PolygonSymbolizer fill="#F04370" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D2C055')</Filter>
+  <PolygonSymbolizer fill="#D2C055" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FDC07A')</Filter>
+  <PolygonSymbolizer fill="#FDC07A" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#CCD4C7')</Filter>
+  <PolygonSymbolizer fill="#CCD4C7" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E0F3E0')</Filter>
+  <PolygonSymbolizer fill="#E0F3E0" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F76898')</Filter>
+  <PolygonSymbolizer fill="#F76898" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F2FA8C')</Filter>
+  <PolygonSymbolizer fill="#F2FA8C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFE35D')</Filter>
+  <PolygonSymbolizer fill="#BFE35D" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#1A9D6F')</Filter>
+  <PolygonSymbolizer fill="#1A9D6F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E0F0C1')</Filter>
+  <PolygonSymbolizer fill="#E0F0C1" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E6F5C9')</Filter>
+  <PolygonSymbolizer fill="#E6F5C9" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#74C69C')</Filter>
+  <PolygonSymbolizer fill="#74C69C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#737373')</Filter>
+  <PolygonSymbolizer fill="#737373" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#409963')</Filter>
+  <PolygonSymbolizer fill="#409963" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#D6D6D6')</Filter>
+  <PolygonSymbolizer fill="#D6D6D6" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F4B470')</Filter>
+  <PolygonSymbolizer fill="#F4B470" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FED96A')</Filter>
+  <PolygonSymbolizer fill="#FED96A" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#812B92')</Filter>
+  <PolygonSymbolizer fill="#812B92" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3DF7F')</Filter>
+  <PolygonSymbolizer fill="#B3DF7F" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#7FA056')</Filter>
+  <PolygonSymbolizer fill="#7FA056" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FED99A')</Filter>
+  <PolygonSymbolizer fill="#FED99A" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFE7E5')</Filter>
+  <PolygonSymbolizer fill="#BFE7E5" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E5C468')</Filter>
+  <PolygonSymbolizer fill="#E5C468" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F04028')</Filter>
+  <PolygonSymbolizer fill="#F04028" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#983999')</Filter>
+  <PolygonSymbolizer fill="#983999" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FDB46C')</Filter>
+  <PolygonSymbolizer fill="#FDB46C" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FCB887')</Filter>
+  <PolygonSymbolizer fill="#FCB887" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BFD0C5')</Filter>
+  <PolygonSymbolizer fill="#BFD0C5" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#9AD9DD')</Filter>
+  <PolygonSymbolizer fill="#9AD9DD" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#C7CBB9')</Filter>
+  <PolygonSymbolizer fill="#C7CBB9" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F73563')</Filter>
+  <PolygonSymbolizer fill="#F73563" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#C7C7C7')</Filter>
+  <PolygonSymbolizer fill="#C7C7C7" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF41')</Filter>
+  <PolygonSymbolizer fill="#FFFF41" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FEF2E0')</Filter>
+  <PolygonSymbolizer fill="#FEF2E0" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFFFF')</Filter>
+  <PolygonSymbolizer fill="#FFFFFF" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FEE6AA')</Filter>
+  <PolygonSymbolizer fill="#FEE6AA" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFFB3')</Filter>
+  <PolygonSymbolizer fill="#FFFFB3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#5B6FAE')</Filter>
+  <PolygonSymbolizer fill="#5B6FAE" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#42AED0')</Filter>
+  <PolygonSymbolizer fill="#42AED0" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FCB482')</Filter>
+  <PolygonSymbolizer fill="#FCB482" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#4DB47E')</Filter>
+  <PolygonSymbolizer fill="#4DB47E" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F875A7')</Filter>
+  <PolygonSymbolizer fill="#F875A7" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#A6CF86')</Filter>
+  <PolygonSymbolizer fill="#A6CF86" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#B3DE53')</Filter>
+  <PolygonSymbolizer fill="#B3DE53" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#8CCD57')</Filter>
+  <PolygonSymbolizer fill="#8CCD57" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#F2EDAD')</Filter>
+  <PolygonSymbolizer fill="#F2EDAD" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#E37B68')</Filter>
+  <PolygonSymbolizer fill="#E37B68" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#FFFF00')</Filter>
+  <PolygonSymbolizer fill="#FFFF00" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+ 
+<Rule>
+  <Filter>([macro_color] = '#BD8CC3')</Filter>
+  <PolygonSymbolizer fill="#BD8CC3" fill-opacity="1" />
+  <LineSymbolizer stroke-width="0.2" stroke="#aaaaaa" />
+</Rule>
+
+</Style>
+
+</Map>

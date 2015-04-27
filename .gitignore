@@ -25,3 +25,7 @@ tmp
 *.shx
 gmna/styles.txt
 
+rebuild/gmna.xml
+rebuild.gmus.xml
+rebuild/TileStache/map_cache
+
