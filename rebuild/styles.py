@@ -15,7 +15,7 @@ except:
 
 cur = conn.cursor()
 
-cur.execute("select distinct macro_color FROM gmus.lookup_units WHERE macro_color IS NOT NULL AND macro_colo != ''")
+cur.execute("select distinct macro_color FROM gmus.lookup_units WHERE macro_color IS NOT NULL AND macro_color != ''")
 gmus_colors = cur.fetchall()
 
 gmus_xml = """<?xml version="1.0" encoding="utf-8"?>
