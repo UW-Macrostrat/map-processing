@@ -15,7 +15,7 @@ except:
 
 cur = conn.cursor()
 
-cur.execute("select distinct macro_color FROM gmus.lookup_units WHERE macro_color IS NOT NULL AND macro_colo r != ''")
+cur.execute("select distinct macro_color FROM gmus.lookup_units WHERE macro_color IS NOT NULL AND macro_colo != ''")
 gmus_colors = cur.fetchall()
 
 gmus_xml = """<?xml version="1.0" encoding="utf-8"?>
@@ -41,7 +41,7 @@ gmus_xml = """<?xml version="1.0" encoding="utf-8"?>
 <Style name="gmus" filter-mode="first">
 """
 
-gmus_xml_template = """ 
+gmus_xml_template = """
 <Rule>
   <Filter>([macro_color] = '%s')</Filter>
   <PolygonSymbolizer fill="%s" fill-opacity="1" />
@@ -95,7 +95,7 @@ gmna_xml = """<?xml version="1.0" encoding="utf-8"?>
 
 """
 
-gmna_xml_template = """ 
+gmna_xml_template = """
 <Rule>
   <Filter>([interval_color] = '%s')</Filter>
   <PolygonSymbolizer fill="%s" fill-opacity="1" />
@@ -115,4 +115,3 @@ gmna_xml += """
 
 with open(os.path.dirname(os.path.realpath(sys.argv[0])) + "/TileStache/gmna.xml", "w") as output:
     output.write(gmna_xml)
-
