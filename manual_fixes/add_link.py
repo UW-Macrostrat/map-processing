@@ -22,7 +22,7 @@ parser.add_argument("-sn", "--strat_name_id", dest="strat_name_id",
 
 parser.add_argument("-u", "--unit_id", dest="unit_id",
   default="na", type=str, required=False,
-  help="Macrostrat strat_name_id")
+  help="Macrostrat unit_id")
 
 arguments = parser.parse_args()
 
