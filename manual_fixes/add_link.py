@@ -98,7 +98,7 @@ def unit_match() :
   # Delete from gmus.best_geounits_macrounits
   cur.execute(""" 
     DELETE FROM gmus.best_geounits_macrounits WHERE geologic_unit_gid IN (
-      SELECT geologic_unit_gid FROM gmus.geounits_macrounits WHERE unit_link = %(unit_link)s AND unit_id = %(unit_id)s AND type = 0
+      SELECT geologic_unit_gid FROM gmus.geounits_macrounits WHERE unit_link = %(unit_link)s AND unit_id = %(unit_id)s
     )
   """, {
     "unit_id": arguments.unit_id, 
