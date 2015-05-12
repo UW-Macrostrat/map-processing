@@ -93,8 +93,8 @@ xml += """
 
 </Map>
 """
-#with open("/Users/" + credentials.system_user + "/Documents/MapBox/project/gmus_new/style.mss", "w") as output:
-#    output.write(macro_css)
+with open("/Users/" + credentials.system_user + "/Documents/MapBox/project/gmus_new/style.mss", "w") as output:
+    output.write(macro_css)
 
 with open("/Users/" + credentials.system_user + "/gmus.xml", "w") as output:
     output.write(xml)

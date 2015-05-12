@@ -18,7 +18,6 @@ cur = conn.cursor()
 cur.execute("select distinct interval_color, lith_color FROM gmna.lookup_units")
 colors = cur.fetchall()
 
-css = ""
 vector_css = [
   OrderedDict([
     ("id", "gmna-layer"),
@@ -28,6 +27,34 @@ vector_css = [
     ("paint", OrderedDict([("fill-outline-color", "#aaa"), ("fill-color", "#fff"), ("fill-opacity", "0.5")]))
   ])
 ]
+
+css = """
+Map {
+  background-color: transparent;
+}
+
+#gmna {
+  polygon-opacity:1;
+  polygon-fill: #000;
+  line-color: #aaa;
+}
+#gmna[zoom<=9] {
+  line-width: 0.0;
+}
+#gmna[zoom>9] {
+  line-width: 0.2;
+}
+#gmna[interval_color="null"] {
+   polygon-fill: #777777;
+}
+#gmna[interval_color=null] {
+   polygon-fill: #777777;
+}
+#gmna[interval_color=""] {
+   polygon-fill: #777777;
+}
+
+"""
 
 for color in colors :
   css += '#gmna[interval_color="' + color[0] + '"] {\n   polygon-fill: ' + color[0] + ';\n}\n'
@@ -44,4 +71,7 @@ for color in colors :
 
 with open("styles.txt", "w") as output:
     output.write(json.dumps(vector_css, indent=2))
+
+with open("/Users/" + credentials.system_user + "/Documents/MapBox/project/gmna_new/style.mss", "w") as output:
+    output.write(css)
 

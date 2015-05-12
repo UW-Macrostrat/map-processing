@@ -20,391 +20,391 @@
 
 <Style name="gmna" filter-mode="first">
 
- 
+
 <Rule>
   <Filter>([interval_color] = '#7FC64E')</Filter>
   <PolygonSymbolizer fill="#7FC64E" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#8CB06C')</Filter>
   <PolygonSymbolizer fill="#8CB06C" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F74370')</Filter>
   <PolygonSymbolizer fill="#F74370" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#BFD99D')</Filter>
   <PolygonSymbolizer fill="#BFD99D" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FFFF99')</Filter>
   <PolygonSymbolizer fill="#FFFF99" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#27A37F')</Filter>
   <PolygonSymbolizer fill="#27A37F" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FD9A52')</Filter>
   <PolygonSymbolizer fill="#FD9A52" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#B3E3EE')</Filter>
   <PolygonSymbolizer fill="#B3E3EE" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#B3E095')</Filter>
   <PolygonSymbolizer fill="#B3E095" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#998E4F')</Filter>
   <PolygonSymbolizer fill="#998E4F" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#678F66')</Filter>
   <PolygonSymbolizer fill="#678F66" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#B5B5B5')</Filter>
   <PolygonSymbolizer fill="#B5B5B5" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FEB342')</Filter>
   <PolygonSymbolizer fill="#FEB342" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FDCDA1')</Filter>
   <PolygonSymbolizer fill="#FDCDA1" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#E27C88')</Filter>
   <PolygonSymbolizer fill="#E27C88" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F2F91D')</Filter>
   <PolygonSymbolizer fill="#F2F91D" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#BFB777')</Filter>
   <PolygonSymbolizer fill="#BFB777" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#34B2C9')</Filter>
   <PolygonSymbolizer fill="#34B2C9" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#A6A6A6')</Filter>
   <PolygonSymbolizer fill="#A6A6A6" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F1C868')</Filter>
   <PolygonSymbolizer fill="#F1C868" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F0047F')</Filter>
   <PolygonSymbolizer fill="#F0047F" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#99C2B5')</Filter>
   <PolygonSymbolizer fill="#99C2B5" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#A6D84A')</Filter>
   <PolygonSymbolizer fill="#A6D84A" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#EE5845')</Filter>
   <PolygonSymbolizer fill="#EE5845" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F99BC1')</Filter>
   <PolygonSymbolizer fill="#F99BC1" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#009270')</Filter>
   <PolygonSymbolizer fill="#009270" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#67C5CA')</Filter>
   <PolygonSymbolizer fill="#67C5CA" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#C5816F')</Filter>
   <PolygonSymbolizer fill="#C5816F" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FFF2AE')</Filter>
   <PolygonSymbolizer fill="#FFF2AE" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F04370')</Filter>
   <PolygonSymbolizer fill="#F04370" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#80CFD8')</Filter>
   <PolygonSymbolizer fill="#80CFD8" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FDC07A')</Filter>
   <PolygonSymbolizer fill="#FDC07A" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#CCD4C7')</Filter>
   <PolygonSymbolizer fill="#CCD4C7" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#86CDA5')</Filter>
   <PolygonSymbolizer fill="#86CDA5" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#1A9D6F')</Filter>
   <PolygonSymbolizer fill="#1A9D6F" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F9F97F')</Filter>
   <PolygonSymbolizer fill="#F9F97F" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#409963')</Filter>
   <PolygonSymbolizer fill="#409963" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F4B470')</Filter>
   <PolygonSymbolizer fill="#F4B470" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F444A9')</Filter>
   <PolygonSymbolizer fill="#F444A9" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#812B92')</Filter>
   <PolygonSymbolizer fill="#812B92" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#99C08D')</Filter>
   <PolygonSymbolizer fill="#99C08D" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#7FA056')</Filter>
   <PolygonSymbolizer fill="#7FA056" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F04028')</Filter>
   <PolygonSymbolizer fill="#F04028" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F4AA70')</Filter>
   <PolygonSymbolizer fill="#F4AA70" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FDB46C')</Filter>
   <PolygonSymbolizer fill="#FDB46C" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#67A599')</Filter>
   <PolygonSymbolizer fill="#67A599" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FCA773')</Filter>
   <PolygonSymbolizer fill="#FCA773" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#E5AC4D')</Filter>
   <PolygonSymbolizer fill="#E5AC4D" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F73563')</Filter>
   <PolygonSymbolizer fill="#F73563" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#9AD9DD')</Filter>
   <PolygonSymbolizer fill="#9AD9DD" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FDB462')</Filter>
   <PolygonSymbolizer fill="#FDB462" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#C7C7C7')</Filter>
   <PolygonSymbolizer fill="#C7C7C7" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FFFFFF')</Filter>
   <PolygonSymbolizer fill="#FFFFFF" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#5B6FAE')</Filter>
   <PolygonSymbolizer fill="#5B6FAE" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#7FCA93')</Filter>
   <PolygonSymbolizer fill="#7FCA93" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#42AED0')</Filter>
   <PolygonSymbolizer fill="#42AED0" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#CB8C37')</Filter>
   <PolygonSymbolizer fill="#CB8C37" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#B3E1B6')</Filter>
   <PolygonSymbolizer fill="#B3E1B6" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FCB482')</Filter>
   <PolygonSymbolizer fill="#FCB482" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F768A9')</Filter>
   <PolygonSymbolizer fill="#F768A9" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#8CCD57')</Filter>
   <PolygonSymbolizer fill="#8CCD57" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#5ABC8C')</Filter>
   <PolygonSymbolizer fill="#5ABC8C" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#BFC26B')</Filter>
   <PolygonSymbolizer fill="#BFC26B" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#F1E19D')</Filter>
   <PolygonSymbolizer fill="#F1E19D" fill-opacity="1" />
   <LineSymbolizer stroke-width="0.0" stroke="#aaaaaa" />
 </Rule>
- 
+
 <Rule>
   <Filter>([interval_color] = '#FFFF00')</Filter>
   <PolygonSymbolizer fill="#FFFF00" fill-opacity="1" />
