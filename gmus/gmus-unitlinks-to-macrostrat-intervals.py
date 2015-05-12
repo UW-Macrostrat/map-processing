@@ -6,7 +6,9 @@ sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
 import credentials
 
 def is_valid(interval) :
-  interval = replace_precam(interval)
+  if interval is not None :
+    interval = replace_precam(interval)
+
   if (interval is not None) and (len(interval) > 1) and ((interval in interval_lookup) or (' '.join(fix_parts(interval.split("-"))) in interval_lookup)):
     return True
   else :
@@ -18,8 +20,8 @@ def fix_parts(parts) :
   return parts
 
 def replace_precam(interval) :
-  if interval == "preCambrian" :
-    return "Precambrian"
+  if "preCambrian" in interval :
+    return interval.replace("preCambrian", "Precambrian")
   else :
     return interval
 
@@ -32,6 +34,8 @@ def parse_range(min_interval, max_interval, unit_link):
 
     if (parts[0] == "Early") or (parts[0] == "Late") or (parts[0] == "Middle") :
       min_interval = ' '.join(parts)
+    elif (parts[1] == "Proterozoic") :
+      min_interval = "Proterozoic"
     else :
       print "MIN_INTERVAL DOESN'T HAVE EARLY LATE OR MIDDLE ", min_interval
 
@@ -39,6 +43,8 @@ def parse_range(min_interval, max_interval, unit_link):
     parts = fix_parts(max_interval.split("-"))
     if (parts[0] == "Early") or (parts[0] == "Late") or (parts[0] == "Middle") :
       max_interval = ' '.join(parts)
+    elif (parts[1] == "Proterozoic") :
+      max_interval = "Proterozoic"
     else :
       print "MAX_INTERVAL DOESN'T HAVE EARLY LATE OR MIDDLE ", max_interval
 
@@ -92,6 +98,44 @@ def update(containing_interval_id, min_interval_id, max_interval_id, unit_link) 
   cur.execute("UPDATE gmus.ages SET macro_containing_interval_id = %s, macro_min_interval_id = %s, macro_max_interval_id = %s WHERE unit_link = %s", [containing_interval_id, min_interval_id, max_interval_id, unit_link])
   conn.commit()
 
+def findBestMinInterval(unit):
+  # Check for min_age
+  if unit[1] :
+    return unit[1]
+  # min_epoch
+  elif unit[9] :
+    return unit[9]
+  # min_period
+  elif unit[7] :
+    return unit[7]
+  # min era
+  elif unit[3] :
+    return unit[3]
+  # min eon
+  elif unit[5] :
+    return unit[5]
+  else :
+    return ""
+
+def findBestMaxInterval(unit):
+  # Check for max_age
+  if unit[2] :
+    return unit[2]
+  # max_epoch
+  elif unit[10] :
+    return unit[10]
+  # max_period
+  elif unit[8] :
+    return unit[8]
+  # max era
+  elif unit[4] :
+    return unit[4]
+  # max eon
+  elif unit[6] :
+    return unit[6]
+  else :
+    return ""
+
 # Connect to the database
 try:
   conn = psycopg2.connect(dbname=credentials.pg_db, user=credentials.pg_user, host=credentials.pg_host, port=credentials.pg_port)
@@ -108,6 +152,7 @@ interval_lookup = {}
 
 for i, interval in enumerate(intervals):
   interval_lookup[interval[3]] = interval
+
 
 #cur.execute("select gid, unit_link, min_age, max_age, min_era, max_era, min_eon, max_eon, min_period, max_period, min_epoch, max_epoch from gmus where color is null")
 cur.execute("select unit_link, min_age, max_age, min_era, max_era, min_eon, max_eon, min_period, max_period, min_epoch, max_epoch from gmus.ages")
@@ -151,6 +196,10 @@ for i, unit in enumerate(units):
   elif is_valid(unit[6]) :
     max_interval = unit[6]
 
+  else :
+    min_interval = findBestMinInterval(unit)
+    max_interval = findBestMaxInterval(unit)
+
   try :
     max_interval
     min_interval
@@ -158,30 +207,30 @@ for i, unit in enumerate(units):
     print "MIN OR MAX_INTERVAL NOT DEFINED ", unit
 
 
-  else :
-    if min_interval == max_interval :
-      if "-" in min_interval:
+  if min_interval == max_interval :
+    if "-" in min_interval:
 
-        parts = fix_parts(min_interval.split("-"))
-        if (parts[0] == "Early") or (parts[0] == "Late") or (parts[0] == "Middle") :
-          try:
-            int_id = interval_lookup[' '.join(parts)][0]
-          except:
-            print ' '.join(parts)
-
-          update(int_id, int_id, int_id, unit[0])
-        else :
-          ## Split it on the '-' and treat it like a range
-          parts = min_interval.split("-")
-          parse_range(parts[0], parts[1], unit[0])
-
-      else:
+      parts = fix_parts(min_interval.split("-"))
+      if (parts[0] == "Early") or (parts[0] == "Late") or (parts[0] == "Middle") :
         try:
-          int_id = interval_lookup[replace_precam(min_interval)][0]
+          int_id = interval_lookup[' '.join(parts)][0]
         except:
-          print "EQUIVALENCY MESS UP ", min_interval
+          print ' '.join(parts)
 
         update(int_id, int_id, int_id, unit[0])
+      else :
+        ## Split it on the '-' and treat it like a range
+        parts = min_interval.split("-")
+        parse_range(parts[0], parts[1], unit[0])
 
-    else :
-      parse_range(min_interval, max_interval, unit[0])
+    else:
+      try:
+        int_id = interval_lookup[replace_precam(min_interval)][0]
+      except:
+        print "\n EQUIVALENCY MESS UP ", unit
+        continue
+
+      update(int_id, int_id, int_id, unit[0])
+
+  else :
+    parse_range(min_interval, max_interval, unit[0])
