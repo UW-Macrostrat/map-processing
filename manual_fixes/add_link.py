@@ -98,7 +98,7 @@ def unit_match() :
   # Delete from gmus.best_geounits_macrounits
   cur.execute(""" 
     DELETE FROM gmus.best_geounits_macrounits WHERE geologic_unit_gid IN (
-      SELECT geologic_unit_gid FROM gmus.geounits_macrounits WHERE unit_link = %(unit_link)s AND unit_id = %(unit_id)s
+      SELECT geologic_unit_gid FROM gmus.geounits_macrounits WHERE unit_link = %(unit_link)s AND unit_id = %(unit_id)s AND type > 0
     )
   """, {
     "unit_id": arguments.unit_id, 
@@ -182,7 +182,7 @@ def strat_name_match() :
   # Delete from best_geounits_macrounits
   cur.execute(""" 
     DELETE FROM gmus.best_geounits_macrounits WHERE geologic_unit_gid IN (
-      SELECT geologic_unit_gid FROM gmus.geounits_macrounits WHERE unit_link = %(unit_link)s AND type > 0
+      SELECT geologic_unit_gid FROM gmus.geounits_macrounits WHERE unit_link = %(unit_link)s 
     )
   """, {
     "strat_name_id": arguments.strat_name_id, 
@@ -193,32 +193,37 @@ def strat_name_match() :
   # Insert into best_geounits_macrounits
   cur.execute("""
   INSERT INTO gmus.best_geounits_macrounits (geologic_unit_gid, unit_link, best_units, t_age, b_age, macro_interval_id) (
+
     WITH first as (SELECT geologic_unit_gid, unit_link, unit_id AS unit
-      FROM gmus.%(pg_geounits_macrounits)s 
-      WHERE unit_link = %(unit_link)s AND strat_name_id = %(strat_name_id)s AND type = 0
+      FROM gmus.%(pg_geounits_macrounits)s
+      WHERE unit_link = %(unit_link)s AND type = 0
     ),
-    result AS (
-      SELECT geologic_unit_gid, unit_link, unit, (
+    second AS (
+      SELECT geologic_unit_gid, unit_link, array_agg(unit) AS best_units
+      FROM first
+    GROUP BY geologic_unit_gid, unit_link
+    ),
+    third AS (
+      SELECT geologic_unit_gid, unit_link, best_units, (
         SELECT min(t_age) as t_age
         FROM %(macrostrat_schema)s.lookup_unit_intervals
-        WHERE unit_id = unit
-      ) t_age,
-      (
+        WHERE unit_id = ANY (best_units)
+      ) t_age, (
         SELECT max(b_age) as b_age
         FROM %(macrostrat_schema)s.lookup_unit_intervals
-        WHERE unit_id = unit
+        WHERE unit_id = ANY (best_units)
       ) b_age
-      FROM first
+      FROM second
     )
-    SELECT geologic_unit_gid, unit_link, array[unit] AS best_units, t_age, b_age, (
-      SELECT id
-      FROM %(macrostrat_schema)s.intervals
-      LEFT JOIN %(macrostrat_schema)s.timescales_intervals ON intervals.id = timescales_intervals.interval_id
-      WHERE age_bottom >= b_age AND age_top <= t_age AND (timescale_id != 6 or timescale_id is null)
-      ORDER BY rank DESC
-      LIMIT 1
-    ) macro_interval_id
-    FROM result
+    SELECT geologic_unit_gid, unit_link, best_units, t_age, b_age, (
+        SELECT id
+        FROM %(macrostrat_schema)s.intervals
+        LEFT JOIN %(macrostrat_schema)s.timescales_intervals ON intervals.id = timescales_intervals.interval_id
+        WHERE age_bottom >= b_age AND age_top <= t_age AND (timescale_id != 6 or timescale_id is null)
+        ORDER BY rank DESC
+        LIMIT 1
+      ) macro_interval_id
+    FROM third
    )
   """, {
     "strat_name_id": arguments.strat_name_id, 
