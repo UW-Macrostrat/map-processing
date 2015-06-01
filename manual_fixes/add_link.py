@@ -109,9 +109,9 @@ def unit_match() :
 
   # Add to gmus.best_geounits_macrounits
   cur.execute(""" 
-    INSERT INTO gmus.best_geounits_macrounits (geologic_unit_gid, unit_link, best_units, t_age, b_age, macro_interval_id) (
+    INSERT INTO gmus.best_geounits_macrounits (geologic_unit_gid, unit_link, best_units, best_names, t_age, b_age, macro_interval_id) (
       WITH result AS (
-        SELECT geologic_unit_gid, unit_link, unit_id, (
+        SELECT geologic_unit_gid, unit_link, unit_id, strat_name_id, (
           SELECT min(t_age) as t_age
           FROM macrostrat.lookup_unit_intervals
           WHERE unit_id = %(unit_id)s
@@ -124,7 +124,7 @@ def unit_match() :
         FROM gmus.geounits_macrounits
         WHERE unit_link = %(unit_link)s AND unit_id = %(unit_id)s
       )
-      SELECT geologic_unit_gid, unit_link, array[unit_id] AS best_units, t_age, b_age, (
+      SELECT geologic_unit_gid, unit_link, array_agg(unit_id) AS best_units, array_agg(distinct strat_name_id) AS best_names, t_age, b_age, (
         SELECT id
         FROM macrostrat.intervals
         LEFT JOIN macrostrat.timescales_intervals ON intervals.id = timescales_intervals.interval_id
@@ -154,7 +154,7 @@ def strat_name_match() :
          JOIN %(macrostrat_schema)s.unit_strat_names usn ON us.unit_id = usn.unit_id
          JOIN %(macrostrat_schema)s.lookup_strat_names lsn ON usn.strat_name_id = lsn.strat_name_id
          JOIN %(macrostrat_schema)s.cols c ON us.col_id = c.id
-         WHERE c.status_code = 'active' AND lsn.strat_name_id = %(strat_name_id)s
+         WHERE c.status_code = 'active' AND (lsn.bed_id IN (%(strat_name_id)s) OR lsn.mbr_id IN (%(strat_name_id)s) OR lsn.fm_id IN (%(strat_name_id)s) OR lsn.gp_id IN (%(strat_name_id)s) OR lsn.sgp_id IN (%(strat_name_id)s))
       ), 
       distance AS (
         SELECT gu.gid, ST_Distance(gu.geom::geography, u.poly_geom::geography)/1000 AS distance, gu.unit_link, u.unit_id, u.strat_name_id
@@ -192,19 +192,19 @@ def strat_name_match() :
 
   # Insert into best_geounits_macrounits
   cur.execute("""
-  INSERT INTO gmus.best_geounits_macrounits (geologic_unit_gid, unit_link, best_units, t_age, b_age, macro_interval_id) (
+  INSERT INTO gmus.best_geounits_macrounits (geologic_unit_gid, unit_link, best_units, best_names, t_age, b_age, macro_interval_id) (
 
-    WITH first as (SELECT geologic_unit_gid, unit_link, unit_id AS unit
+    WITH first as (SELECT geologic_unit_gid, unit_link, unit_id AS unit, strat_name_id
       FROM gmus.%(pg_geounits_macrounits)s
       WHERE unit_link = %(unit_link)s AND type = 0
     ),
     second AS (
-      SELECT geologic_unit_gid, unit_link, array_agg(unit) AS best_units
+      SELECT geologic_unit_gid, unit_link, array_agg(unit) AS best_units, array_agg(distinct strat_name_id) AS best_names
       FROM first
     GROUP BY geologic_unit_gid, unit_link
     ),
     third AS (
-      SELECT geologic_unit_gid, unit_link, best_units, (
+      SELECT geologic_unit_gid, unit_link, best_units, best_names, (
         SELECT min(t_age) as t_age
         FROM %(macrostrat_schema)s.lookup_unit_intervals
         WHERE unit_id = ANY (best_units)
@@ -215,7 +215,7 @@ def strat_name_match() :
       ) b_age
       FROM second
     )
-    SELECT geologic_unit_gid, unit_link, best_units, t_age, b_age, (
+    SELECT geologic_unit_gid, unit_link, best_units, best_names, t_age, b_age, (
         SELECT id
         FROM %(macrostrat_schema)s.intervals
         LEFT JOIN %(macrostrat_schema)s.timescales_intervals ON intervals.id = timescales_intervals.interval_id
