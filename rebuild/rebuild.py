@@ -743,7 +743,9 @@ pg_cur.execute("""
   FROM result;
 
   CREATE INDEX ON gmus.best_geounits_macrounits_new (geologic_unit_gid);
-  CREATE INDEX ON gmus.best_geounits_macrounits_new (best_units);
+  CREATE INDEX ON gmus.best_geounits_macrounits_new (unit_link);
+  CREATE INDEX ON gmus.best_geounits_macrounits_new USING GIN (best_units);
+  CREATE INDEX ON gmus.best_geounits_macrounits_new USING GIN (best_names);
   CREATE INDEX ON gmus.best_geounits_macrounits_new (t_age);
   CREATE INDEX ON gmus.best_geounits_macrounits_new (b_age);
   CREATE INDEX ON gmus.best_geounits_macrounits_new (macro_interval_id);
