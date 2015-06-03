@@ -70,7 +70,7 @@ def parseSubunitState(target, state, in_use) :
 def normalizeName(name):
   # Remove parenthesis and anything between them
   name = re.sub('\(subsurface of .*\)', '', name)
-  return name.replace('*', '').replace('/', '').replace(':', '').replace('.', '').strip()
+  return name.replace('*', '').replace('/', '').replace(':', '').replace('.', '').replace('[?]', '').strip()
 
 
 
@@ -105,7 +105,7 @@ for i in xrange(1, 16800):
       for name in attr_contents :
         if isinstance(name, basestring) :
           usageInstance = {'name': '', 'places': []}
-          if name == 'No current usage.':
+          if 'No current usage' in name:
             unit['usage_notes'] = ' '.join([i for i in attr_contents if isinstance(i, basestring)]).strip()
             break
 

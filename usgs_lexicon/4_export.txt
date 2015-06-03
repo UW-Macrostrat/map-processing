@@ -1,0 +1,49 @@
+Copy (SELECT * FROM macrostrat.usgs_lexicon_meta) To '/Users/jczaplewski/usgs_lexicon_meta.csv' DELIMITER ',' CSV HEADER;
+ 
+Copy (SELECT * FROM macrostrat.usgs_strat_names) To '/Users/jczaplewski/usgs_strat_names.csv' DELIMITER ',' CSV HEADER;
+  
+Copy (SELECT * FROM macrostrat.usgs_strat_tree) To '/Users/jczaplewski/usgs_strat_tree.csv' DELIMITER ',' CSV HEADER;
+
+
+DROP TABLE IF EXISTS usgs_lexicon_meta;
+CREATE TABLE usgs_lexicon_meta (
+  usgs_id integer,
+  name varchar(40),
+  geologic_age text,
+  usage_notes text,
+  other text,
+  province varchar(100)
+) ENGINE = MyISAM;
+
+DROP TABLE IF EXISTS usgs_strat_names;
+CREATE TABLE usgs_strat_names (
+  id mediumint(8),
+  usgs_id mediumint(8),
+  strat_name varchar(75),
+  rank enum('', 'SGp', 'Gp', 'Fm', 'Mbr', 'Bed'),
+  ref_id mediumint(8),
+  places text
+) ENGINE = MyISAM;
+
+DROP TABLE IF EXISTS usgs_strat_tree;
+CREATE TABLE usgs_strat_tree (
+  id serial,
+  this_name integer,
+  rel enum('', 'parent', 'synonym'),
+  that_name integer,
+  ref_id integer,
+  check_me integer
+) ENGINE = MyISAM;
+
+
+LOAD DATA INFILE '/Users/jczaplewski/usgs_lexicon_meta.csv' INTO TABLE usgs_lexicon_meta FIELDS TERMINATED BY ',' enclosed by '"' LINES TERMINATED BY '\n' IGNORE 1 LINES;
+
+LOAD DATA INFILE '/Users/jczaplewski/usgs_strat_names.csv' INTO TABLE usgs_strat_names FIELDS TERMINATED BY ',' enclosed by '"' LINES TERMINATED BY '\n' IGNORE 1 LINES;
+
+
+LOAD DATA INFILE '/Users/jczaplewski/usgs_strat_tree.csv' INTO TABLE usgs_strat_tree FIELDS TERMINATED BY ',' enclosed by '"' LINES TERMINATED BY '\n' IGNORE 1 LINES;
+
+CREATE INDEX ulm_id ON usgs_lexicon_meta (usgs_id);
+CREATE INDEX usn_id ON usgs_strat_names (id);
+CREATE INDEX usn_us_id ON usgs_strat_names (usgs_id);
+CREATE INDEX ust_id ON usgs_strat_tree (id);

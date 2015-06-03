@@ -7,9 +7,17 @@ lith_data = json.loads(urllib2.urlopen('http://localhost:5000/api/v1/defs/lithol
 lithologies = ['formation', 'member', 'group', 'supergroup', 'bed', 'beds', 'submember', 'metaquartzite', 'bentonite', 'informal']
 upperLiths = []
 ranks = ['formation', 'member', 'group', 'supergroup', 'bed', 'beds', 'submember']
+
 for lith in lith_data['success']['data']:
   lithologies.append(lith['lith'])
   upperLiths.append(lith['lith'].title())
+
+
+strat_data = json.loads(urllib2.urlopen('http://localhost:5000/api/v1/defs/strat_names?all').read())
+strat_names = {}
+for name in strat_data['success']['data']:
+  strat_names[name['name']] = {'name': name['name'], 'rank': name['rank'], 'id': name['id']}
+
 
 
 def normalizeName(name) :
@@ -96,21 +104,25 @@ with open('parsed_lexicon.json', 'r') as input:
   lexicon = json.loads(input.read())
 
 lexicon_idx = {}
+new_lexicon = {}
 
 for name in lexicon:
-
   #lexicon_idx[normalizeName(name['name'])] = name['id']
+
+  # For each name in the usage field...
   for syn in name['usage'] :
     lastRank = ''
-    # Split on 'in'
     good_units = []
+    # Clean up, and split on "of"
     units = syn['name'].replace(' in ', ' of ').split(' of ')
     for unit in units:
       if 'informal' in unit:
         clean = unit.replace('(informal)', '').replace('[informal]', '')
+        # Split the name on the space
         words = clean.split(' ')
         bad = False
         hasRank = False
+        # See if the name contains a known rank
         for word in words:
           if word in ranks:
             hasRank = True
@@ -137,35 +149,51 @@ for name in lexicon:
 
     # These have units with unknown ranks
     for unit in good_units:
-      if unit['rank'] == '':
-        print 'Original name --- ', syn['name']
-        print good_units, name['id'], '\n'
-        continue
+      if unit['name'] in strat_names and unit['rank'] == strat_names[unit['name']]['rank']:
+        unit['strat_name_id'] = strat_names[unit['name']]['id']
+
+      else :
+        if unit['rank'] != '':
+          print unit['name'], unit['rank']
+      #if unit['rank'] == '':
+      #  print 'Original name --- ', syn['name']
+      #  print good_units, name['id'], '\n'
+      #  continue
     
+    if name['id'] not in new_lexicon:
+      new_lexicon[name['id']] = {'names': []}
+    
+    new_lexicon[name['id']]['names'].append(good_units)
+
+      
     # Check if each already exists in Macrostrat
 
+    # If so, get the strat_name_id
 
-    # If available, add to strat_tree
+    # If not, create a new record in strat_names
+      #INSERT INTO strat_names (strat_name, rank, ref_id, orig_id) VALUES ('something', 'Fm', 14, usgs_id
+
+    # If hierarchy available (and doesn't already exist), add to strat_tree
 
     lexicon_idx[normalizeName(syn['name'])] = name['id']
 
 
 #print lexicon_idx
+print json.dumps(new_lexicon, indent=2)
 
-for name in xrange(len(lexicon)):
-  for subtype in lexicon[name]['subunits']:
-    for each in xrange(len(lexicon[name]['subunits'][subtype])):
-      term = normalizeName(lexicon[name]['subunits'][subtype][each]['name'])
+#for name in xrange(len(lexicon)):
+#  for subtype in lexicon[name]['subunits']:
+#    for each in xrange(len(lexicon[name]['subunits'][subtype])):
+#      term = normalizeName(lexicon[name]['subunits'][subtype][each]['name'])
       #print term, ' -- ', lexicon[name]['id']
       #if getUSGSID(term) < 0 :
         #print term, ' -- ', lexicon[name]['id']
-      lexicon[name]['subunits'][subtype][each]['usgs_id'] = getUSGSID(term)
+#      lexicon[name]['subunits'][subtype][each]['usgs_id'] = getUSGSID(term)
 
 
 
-#ALTER TABLE strat_names ADD COLUMN orig_id mediumint(8);
-#INSERT INTO refs (author, ref) VALUES ('USGS', 'USGS');
-#INSERT INTO strat_names (strat_name, rank, ref_id, orig_id) VALUES ('something', 'Fm', 14, usgs_id)
+
+
 print total, found
 #print lexicon
 #with open('parsed_lexicon_ids.json', 'w') as output:

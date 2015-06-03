@@ -30,6 +30,7 @@ rebuild/gmus.xml
 rebuild/TileStache/map_cache
 
 usgs_lexicon/parsed_lexicon.json
+usgs_lexicon/parsed_lexicon_ids.json
 usgs_lexicon/usgslex
 
 
