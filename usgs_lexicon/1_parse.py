@@ -115,7 +115,7 @@ for i in xrange(1, 16800):
 
 
           parts = re.split('(\([A-Z]{2}.*)', name)
-          usageInstance['name'] = normalizeName(parts[0])
+          usageInstance['name'] = normalizeName(parts[0]).replace('(Canada)', '').strip()
 
 
           if len(usageInstance['name']) < 1 or len(re.sub(r'\W+', '', usageInstance['name'])) < 1:
@@ -134,6 +134,9 @@ for i in xrange(1, 16800):
                 usageInstance['places'].append({'state': normalizeName(state), 'in_use': True})
               else :
                 usageInstance['places'].append({'state': normalizeName(state), 'in_use': False})
+          else :
+            if '(Canada)' in name:
+              usageInstance['places'].append({'state': 'Canada', 'in_use': ''})
 
           unit['usage'].append(usageInstance)
 

@@ -34,7 +34,7 @@ def flattenHierarchy(name):
     rank = 'SGp'
     name = name.replace('Supergroup', '').replace('supergroup', '')
 
-  if 'Group' in name or 'group' in name:
+  if ' Group' in name or ' group' in name:
     rank = 'Gp'
     name = name.replace('Group', '').replace('group', '')
 
@@ -42,11 +42,11 @@ def flattenHierarchy(name):
     rank = 'Fm'
     name = name.replace('Formatione', '').replace('Formation', '').replace('formation', '')
 
-  if 'Member' in name or 'member' in name:
+  if ' Member' in name or ' member' in name:
     rank = 'Mbr'
     name = name.replace('Member', '').replace('member', '')
 
-  if ' Bed ' in name or ' bed ' in name:
+  if ' Bed' in name or ' bed' in name:
     rank = 'Bed'
     name = name.replace('Bed', '').replace('bed', '')
 
@@ -103,6 +103,10 @@ for i in xrange(len(lexicon)):
 
   if len(lexicon[i]['usage']) > 0:
     for j in xrange(len(lexicon[i]['usage'])):
+
+      if lexicon[i]['usage'][j]['name'].startswith("basalt of") :
+        lexicon[i]['usage'][j]['name'] = lexicon[i]['usage'][j]['name'].replace("basalt of", "").strip()
+
 
       lastRank = ''
       good_units = []
