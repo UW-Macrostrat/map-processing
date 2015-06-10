@@ -4,7 +4,7 @@ import urllib2
 
 lith_data = json.loads(urllib2.urlopen('http://localhost:5000/api/v1/defs/lithologies?all').read())
 
-lithologies = ['formation', 'member', 'group', 'supergroup', 'beds', 'bed', 'submember', 'metaquartzite', 'bentonite', 'informal']
+lithologies = ['au', 'aux', 'de', 'du', 'la', 'formation', 'member', 'group', 'supergroup', 'beds', 'bed', 'submember', 'metaquartzite', 'bentonite']
 upperLiths = []
 ranks = ['formation', 'member', 'group', 'supergroup', 'bed', 'beds', 'submember']
 
@@ -23,6 +23,7 @@ for name in strat_data['success']['data']:
 
 
 lastRank = ''
+badWords = []
 
 def flattenHierarchy(name):
   global lastRank
@@ -39,13 +40,13 @@ def flattenHierarchy(name):
 
   if 'Formation' in name or 'formation' in name:
     rank = 'Fm'
-    name = name.replace('Formation', '').replace('formation', '')
+    name = name.replace('Formatione', '').replace('Formation', '').replace('formation', '')
 
   if 'Member' in name or 'member' in name:
     rank = 'Mbr'
     name = name.replace('Member', '').replace('member', '')
 
-  if 'Bed' in name or 'bed' in name:
+  if ' Bed ' in name or ' bed ' in name:
     rank = 'Bed'
     name = name.replace('Bed', '').replace('bed', '')
 
@@ -96,25 +97,38 @@ lexicon_idx = {}
 new_lexicon = {}
 
 for i in xrange(len(lexicon)):
+  lexicon[i]["name"] = lexicon[i]["name"].replace(".", "").replace("-", "")
+  lexicon[i]["name"] = re.sub('\[.+\]', '', lexicon[i]["name"]).strip()
+  lexicon[i]["name"] = re.sub('\(.+\)', '', lexicon[i]["name"]).strip()
 
   if len(lexicon[i]['usage']) > 0:
     for j in xrange(len(lexicon[i]['usage'])):
 
       lastRank = ''
       good_units = []
+      bad_units = []
 
-      units = lexicon[i]['usage'][j]['name'].replace(' in ', ' of ').split(' of ')
+      units = re.sub('\[.+\]', '', lexicon[i]['usage'][j]['name'])
+      units = re.sub('\(.+\)', '', units)
+      units = units.replace('(informal)', '').replace('[informal]', '').replace('[?]', '').replace('(?)', '').replace('[informal, unranked]', '')
+      units = units.replace(' in ', ' of ').split(' of ')
 
       for unit in units:
-        clean = unit.replace('(informal)', '').replace('[informal]', '').replace('[?]', '').replace('[informal, unranked]', '').strip()
+        clean = unit.replace('(informal)', '').replace('[informal]', '').replace('[?]', '').replace('(?)', '').replace('[informal, unranked]', '').replace(".", "").replace("-", "").replace("]", "").replace("[", "").replace("?", "").replace('"', '').strip()
+        clean = re.sub('\[.+\]', '', clean).strip()
+        clean = re.sub('\(.+\)', '', clean).strip()
 
         if isValidName(clean) :
           good_units.append(clean)
-
+        else:
+          bad_units.append(clean)
 
       # Remove hierarchy, but record it
       for x in xrange(len(good_units)):
         good_units[x] = flattenHierarchy(good_units[x])
+
+      for x in xrange(len(bad_units)):
+        bad_units[x] = flattenHierarchy(bad_units[x])
 
       # If name is known, assign a strat_name_id
       for unit in good_units:
@@ -126,9 +140,8 @@ for i in xrange(len(lexicon)):
        #   if unit['rank'] != '':
         #    print unit['name'], unit['rank']
 
-
+      lexicon[i]['usage'][j]['bad_name'] = bad_units
       lexicon[i]['usage'][j]['parsed_name'] = good_units
-
 
 
 #print json.dumps(lexicon, indent=2)

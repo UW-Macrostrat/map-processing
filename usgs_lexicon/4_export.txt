@@ -1,8 +1,15 @@
-Copy (SELECT * FROM macrostrat.usgs_lexicon_meta) To '/Users/jczaplewski/usgs_lexicon_meta.csv' DELIMITER ',' CSV HEADER;
+Copy (SELECT * FROM macrostrat.usgs_lexicon_meta) To '/Users/john/Desktop/usgs_lexicon_meta.csv' DELIMITER ',' CSV HEADER;
  
-Copy (SELECT * FROM macrostrat.usgs_strat_names) To '/Users/jczaplewski/usgs_strat_names.csv' DELIMITER ',' CSV HEADER;
+Copy (SELECT id, usgs_id, strat_name, rank, ref_id, places FROM macrostrat.usgs_strat_names) To '/Users/john/Desktop/usgs_strat_names.csv' DELIMITER ',' CSV HEADER;
+
+Copy (SELECT * FROM macrostrat.usgs_strat_names_bad) To '/Users/john/Desktop/usgs_strat_names_bad.csv' DELIMITER ',' CSV HEADER;
   
-Copy (SELECT * FROM macrostrat.usgs_strat_tree) To '/Users/jczaplewski/usgs_strat_tree.csv' DELIMITER ',' CSV HEADER;
+Copy (SELECT * FROM macrostrat.usgs_strat_tree) To '/Users/john/Desktop/usgs_strat_tree.csv' DELIMITER ',' CSV HEADER;
+
+
+
+scp ~/Desktop/usgs_* teststrata:/Users/jczaplewski
+
 
 
 DROP TABLE IF EXISTS usgs_lexicon_meta;
@@ -25,6 +32,14 @@ CREATE TABLE usgs_strat_names (
   places text
 ) ENGINE = MyISAM;
 
+DROP TABLE IF EXISTS usgs_strat_names_bad;
+CREATE TABLE usgs_strat_names_bad (
+  usgs_id mediumint(8),
+  strat_name varchar(75),
+  rank enum('', 'SGp', 'Gp', 'Fm', 'Mbr', 'Bed'),
+  places text
+) ENGINE = MyISAM;
+
 DROP TABLE IF EXISTS usgs_strat_tree;
 CREATE TABLE usgs_strat_tree (
   id serial,
@@ -40,10 +55,12 @@ LOAD DATA INFILE '/Users/jczaplewski/usgs_lexicon_meta.csv' INTO TABLE usgs_lexi
 
 LOAD DATA INFILE '/Users/jczaplewski/usgs_strat_names.csv' INTO TABLE usgs_strat_names FIELDS TERMINATED BY ',' enclosed by '"' LINES TERMINATED BY '\n' IGNORE 1 LINES;
 
+LOAD DATA INFILE '/Users/jczaplewski/usgs_strat_names_bad.csv' INTO TABLE usgs_strat_names_bad FIELDS TERMINATED BY ',' enclosed by '"' LINES TERMINATED BY '\n' IGNORE 1 LINES;
 
 LOAD DATA INFILE '/Users/jczaplewski/usgs_strat_tree.csv' INTO TABLE usgs_strat_tree FIELDS TERMINATED BY ',' enclosed by '"' LINES TERMINATED BY '\n' IGNORE 1 LINES;
 
 CREATE INDEX ulm_id ON usgs_lexicon_meta (usgs_id);
 CREATE INDEX usn_id ON usgs_strat_names (id);
 CREATE INDEX usn_us_id ON usgs_strat_names (usgs_id);
+CREATE INDEX usn_usbad_id ON usgs_strat_names_bad (usgs_id);
 CREATE INDEX ust_id ON usgs_strat_tree (id);

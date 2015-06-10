@@ -2,14 +2,162 @@ import json
 import MySQLdb
 import sys
 import psycopg2
+import urllib2
+
+sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
+import credentials
+
+lith_data = json.loads(urllib2.urlopen('http://localhost:5000/api/v1/defs/lithologies?all').read())
+
+lithologies = ['formation', 'member', 'group', 'supergroup', 'beds', 'bed', 'submember', 'metaquartzite', 'bentonite', 'informal']
+upperLiths = []
+
+for lith in lith_data['success']['data']:
+  lithologies.append(lith['lith'])
+  upperLiths.append(lith['lith'].title())
 
 try:
-  connection = MySQLdb.connect(host="localhost", user="jczaplewski", passwd="pbdb", db="playground")
-  pg_conn = psycopg2.connect(dbname="geomacro", user="john", host="localhost", port=5432)
+  connection = MySQLdb.connect(host=credentials.mysql_host, user=credentials.mysql_user, passwd=credentials.mysql_passwd, db=credentials.mysql_db, unix_socket=credentials.mysql_socket, cursorclass=MySQLdb.cursors.DictCursor)
+  pg_conn = psycopg2.connect(dbname=credentials.pg_db, user=credentials.pg_user, host=credentials.pg_host, port=credentials.pg_port)
 except:
   print "Could not connect to database: ", sys.exc_info()[1]
   sys.exit()
  
+
+
+def removeLithology(name):
+  words = name.split(" ")
+  for idx, word in enumerate(words):
+    if word in lithologies or word in upperLiths:
+      words.remove(word)
+
+  return " ".join(words)
+
+
+
+def findIDs():
+  global orphans
+
+  # Assign new IDs
+  for lex_idx, name in enumerate(lexicon):
+    for usage_idx, usage in enumerate(name['usage']):
+      for parsed_idx, parsee in enumerate(usage['parsed_name']):
+
+        if "new_id" in lexicon[lex_idx]["usage"][usage_idx]["parsed_name"][parsed_idx]:
+          continue
+
+        places = [place['state'] for place in usage['places']]
+        new_id = findIDSimple(usage, parsee)
+
+        if new_id:
+          lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["new_id"] = new_id
+
+        else :
+          if len(places) > 0:
+            new_id = findIDComplex(usage, parsee)
+
+            if new_id :
+               lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["new_id"] = new_id
+
+            else :
+              # remove lexicon...
+
+              new_id = findIDSimpleNoLith(usage, parsee)
+
+              if new_id :
+                lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["new_id"] = new_id
+              else :
+                new_id = findIDComplexNoLith(usage, parsee)
+
+                if new_id:
+                  lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["new_id"] = new_id
+                else:
+                  if len(orphans) < 1 :
+                    orphans.append({"name": lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["name"], "rank": lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["rank"], "places": places})
+                  
+                  found = False
+                  for idx, orphan in enumerate(orphans):
+                    if orphan["name"] == lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["name"] and orphan["rank"] == lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["rank"]:
+                      found = True
+                      for place in places:
+                        if place not in orphan["places"]:
+                          orphans[idx]["places"].append(place)
+                  
+                  if not found and "," not in lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["name"]:
+                    print "adding orphan"
+                    orphans.append({"name": lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["name"], "rank": lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["rank"], "places": places})
+
+          else :
+             print "       No places for ", usage['name'], usage['places']
+
+
+def findIDSimple(usage, parsee) :
+  places = [place['state'] for place in usage['places']]
+
+  pg_cur.execute("""
+    SELECT id FROM macrostrat.usgs_strat_names WHERE strat_name ilike %s AND rank = %s AND places && %s
+  """, [parsee['name'], parsee['rank'], places])
+
+  try :
+    new_id = pg_cur.fetchone()[0]
+    return new_id
+  except:
+    return False
+
+
+def findIDSimpleNoLith(usage, parsee) :
+  places = [place['state'] for place in usage['places']]
+
+  pg_cur.execute("""
+    SELECT id FROM macrostrat.usgs_strat_names WHERE strat_name_sans_lith ilike %s AND rank = %s AND places && %s
+  """, [removeLithology(parsee["name"]), parsee['rank'], places])
+
+  try :
+    new_id = pg_cur.fetchone()[0]
+    return new_id
+  except:
+    return False
+
+
+
+
+def findIDComplex(usage, parsee) :
+  pg_cur.execute("SELECT id, places FROM macrostrat.usgs_strat_names WHERE strat_name = %s AND rank = %s", [parsee['name'], parsee['rank']])
+  possibilities = pg_cur.fetchall()
+
+  for pos in possibilities:
+    pg_cur.execute(""" 
+      with given AS (SELECT st_union(st_envelope(geom)) as geom from us_states where postal = ANY(%s)),
+           expected AS (SELECT st_union(st_buffer(st_envelope(geom), 0.12)) AS geom FROM us_states WHERE postal IN (SELECT unnest(places) FROM macrostrat.usgs_strat_names WHERE id = %s))
+
+    SELECT id FROM macrostrat.usgs_strat_names WHERE strat_name ilike %s AND rank = %s AND ST_Intersects((SELECT geom FROM given), (SELECT geom FROM expected))
+    """, [[place['state'] for place in usage['places']], pos[0], removeLithology(parsee["name"]), parsee['rank'] ])
+
+    try:
+      new_id = pg_cur.fetchone()[0]
+      return new_id
+    except:
+      return False
+
+
+
+def findIDComplexNoLith(usage, parsee) :
+  pg_cur.execute("SELECT id, places FROM macrostrat.usgs_strat_names WHERE strat_name_sans_lith ilike %s AND rank = %s", [parsee['name'], parsee['rank']])
+  possibilities = pg_cur.fetchall()
+
+  for pos in possibilities:
+    pg_cur.execute(""" 
+      with given AS (SELECT st_union(st_envelope(geom)) as geom from us_states where postal = ANY(%s)),
+           expected AS (SELECT st_union(st_buffer(st_envelope(geom), 0.12)) AS geom FROM us_states WHERE postal IN (SELECT unnest(places) FROM macrostrat.usgs_strat_names WHERE id = %s))
+
+    SELECT id FROM macrostrat.usgs_strat_names WHERE strat_name_sans_lith ilike %s AND rank = %s AND ST_Intersects((SELECT geom FROM given), (SELECT geom FROM expected))
+    """, [[place['state'] for place in usage['places']], pos[0], parsee['name'], parsee['rank'] ])
+
+    try:
+      new_id = pg_cur.fetchone()[0]
+      return new_id
+    except:
+      return False
 
 
 pg_cur = pg_conn.cursor()
@@ -32,8 +180,17 @@ CREATE TABLE macrostrat.usgs_strat_names (
   id serial,
   usgs_id integer,
   strat_name text,
+  strat_name_sans_lith text,
   rank text,
   ref_id integer,
+  places text[]
+);
+
+DROP TABLE IF EXISTS macrostrat.usgs_strat_names_bad;
+CREATE TABLE macrostrat.usgs_strat_names_bad (
+  usgs_id integer,
+  strat_name text,
+  rank text,
   places text[]
 );
 
@@ -54,6 +211,8 @@ pg_conn.commit()
 with open('parsed_lexicon_ids.json', 'r') as input:
   lexicon = json.loads(input.read())
 
+errors = []
+
 # Record our canonnical names
 for lex_idx, name in enumerate(lexicon):
   pg_cur.execute(""" 
@@ -62,58 +221,91 @@ for lex_idx, name in enumerate(lexicon):
 
   #print lex_idx
   for usage_idx, usage in enumerate(name['usage']):
-    places = [place['state'] for place in usage['places']]
+    places = sorted([place['state'] for place in usage['places']])
 
     if len(usage['parsed_name']) > 0 and usage['parsed_name'][0]['name'].split(' ')[0] == name['name'].split(' ')[0]:
-      print name['id'], usage['parsed_name'][0]['name']
-      pg_cur.execute("""
-        INSERT INTO macrostrat.usgs_strat_names (usgs_id, strat_name, rank, places) VALUES (%s, %s, %s, %s) RETURNING id
-      """, [name['id'], usage['parsed_name'][0]['name'], usage['parsed_name'][0]['rank'], places ])
+      #print name['id'], usage['parsed_name'][0]['name']
 
-      lexicon[lex_idx]['usage'][usage_idx]['new_id'] = pg_cur.fetchone()[0]
+      name_no_lith = removeLithology(usage['parsed_name'][0]['name'])
+
+      pg_cur.execute("""
+        INSERT INTO macrostrat.usgs_strat_names (usgs_id, strat_name, strat_name_sans_lith, rank, places) VALUES (%s, %s, %s, %s, %s) RETURNING id
+      """, [name['id'], usage['parsed_name'][0]['name'], name_no_lith, usage['parsed_name'][0]['rank'], places ])
+
+      new_id = pg_cur.fetchone()[0]
+      lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][0]['new_id'] = new_id
+      lexicon[lex_idx]['usage'][usage_idx]['new_id'] = new_id
+
+    else:
+      if len(usage['parsed_name']) > 0:
+        pg_cur.execute(""" 
+          INSERT INTO macrostrat.usgs_strat_names_bad (usgs_id, strat_name, rank, places) VALUES(%s, %s, %s, %s)
+        """, [name["id"], usage['parsed_name'][0]['name'], usage['parsed_name'][0]['rank'], places])
+
+      errors.append(usage)
   
 
 pg_conn.commit()
-print "--- Done inserting strat names ---"
 
+with open('not_inserted_errors.json', 'with') as outerrors:
+  json.dump(errors, outerrors, indent=2)
+
+print "--- Done inserting strat names with ", len(errors), " errors ---"
+
+orphans = []
+
+# Assign IDs
+findIDs()
 
 for lex_idx, name in enumerate(lexicon):
   for usage_idx, usage in enumerate(name['usage']):
-    for parsed_idx, parsee in enumerate(usage['parsed_name']):
+    for baddy in usage['bad_name']:
+      pg_cur.execute(""" 
+        INSERT INTO macrostrat.usgs_strat_names_bad (usgs_id, strat_name, rank, places) VALUES(%s, %s, %s, %s)
+      """, [name["id"], baddy["name"], baddy["rank"], sorted([place['state'] for place in usage['places']])])
 
-      places = [place['state'] for place in usage['places']]
-      pg_cur.execute("""
-        SELECT id FROM macrostrat.usgs_strat_names WHERE strat_name = %s AND rank = %s AND places && %s
-      """, [parsee['name'], parsee['rank'], places])
+new_usgs_id = 50000
+for idx, orphan in enumerate(orphans):
+  pg_cur.execute(""" 
+    SELECT DISTINCT usgs_id FROM macrostrat.usgs_strat_names WHERE strat_name_sans_lith ilike %s AND places && %s
+  """, [removeLithology(orphan["name"]), orphan["places"]])
+  
+  try:
+    orphans[idx]["usgs_id"] = pg_cur.fetchone()[0]
+  except :
+    orphans[idx]["usgs_id"] = new_usgs_id
+    new_usgs_id += 1
 
-      try :
-        new_id = pg_cur.fetchone()[0]
-        lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["new_id"] = new_id
-      except:
-        if len(places) > 0:
-          # Relax space a bit
-          pg_cur.execute("SELECT id, places FROM macrostrat.usgs_strat_names WHERE strat_name = %s AND rank = %s", [parsee['name'], parsee['rank']])
-          possibilities = pg_cur.fetchall()
+  if len(removeLithology(orphans[idx]["name"])) > 1:
+    pg_cur.execute("""
+      INSERT INTO macrostrat.usgs_strat_names (usgs_id, strat_name, strat_name_sans_lith, rank, places) VALUES (%s, %s, %s, %s, %s) RETURNING id
+    """, [orphans[idx]["usgs_id"], orphans[idx]["name"], removeLithology(orphans[idx]["name"]), orphans[idx]["rank"], orphans[idx]["places"] ])
+    pg_conn.commit()
 
-          for pos in possibilities:
-            pg_cur.execute(""" 
-              with given AS (SELECT st_union(st_envelope(geom)) as geom from us_states where postal = ANY(%s)),
-                   expected AS (SELECT st_buffer(st_envelope(geom), 0.12) AS geom FROM us_states WHERE postal IN (SELECT array_to_string(places, ',') FROM macrostrat.usgs_strat_names WHERE id = %s))
 
-            SELECT id FROM macrostrat.usgs_strat_names WHERE strat_name = %s AND rank = %s AND ST_Intersects((SELECT geom FROM given), (SELECT geom FROM expected))
-            """, [[place['state'] for place in usage['places']], pos[0], parsee['name'], parsee['rank'] ])
+# Try to assign IDs again with new names added
+findIDs()
 
-            try:
-              new_id = pg_cur.fetchone()[0]
-              lexicon[lex_idx]['usage'][usage_idx]['parsed_name'][parsed_idx]["new_id"] = new_id
-            except:
-              continue
-        else :
-          print "       No places for ", usage['name'], usage['places']
-        
+with open('orphans.json', 'w') as output:
+  json.dump(orphans, output, indent=2)
+'''
+orphans = []
 
-        
+for idx, orphan in enumerate(orphans):
+  pg_cur.execute(""" 
+    SELECT DISTINCT usgs_id FROM macrostrat.usgs_strat_names WHERE strat_name_sans_lith ilike %s AND places && %s
+  """, [removeLithology(orphan["name"]), orphan["places"]])
+  
+  try:
+    orphans[idx]["usgs_id"] = pg_cur.fetchone()[0]
+  except :
+    orphans[idx]["usgs_id"] = new_usgs_id
+    new_usgs_id += 1
 
+
+with open('orphans.json', 'w') as output:
+  json.dump(orphans, output, indent=2)
+'''
 
 print "--- Done assiging new strat_name_ids ---"
 #print json.dumps(lexicon, indent=2)
@@ -132,7 +324,8 @@ for name in lexicon:
 
 print "--- Done adding synonyms ---"
 
-
+no_id = 0
+# Insert parents
 for name in lexicon:
   for usage in name['usage'] :
     for name_idx in xrange(len(usage['parsed_name']) - 1, 0, -1):
@@ -141,11 +334,13 @@ for name in lexicon:
           INSERT INTO macrostrat.usgs_strat_tree (this_name, rel, that_name) VALUES (%s, %s, %s)
         """, [usage['parsed_name'][name_idx]['new_id'], 'parent', usage['parsed_name'][name_idx - 1]['new_id'] ])
       else :
+        no_id += 1
         print 'no new id --- ', usage['parsed_name'], [place['state'] for place in usage['places']]
 
 pg_conn.commit()
 print "--- Done adding parents ---"
 
+print "no IDs", no_id
 
 '''
 names_to_insert = []
