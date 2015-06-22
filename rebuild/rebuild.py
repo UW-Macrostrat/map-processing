@@ -179,6 +179,7 @@ params = {
   "timescales_intervals_path": directory + "/timescales_intervals.csv",
   "unit_liths_path": directory + "/unit_liths.csv",
   "lookup_unit_liths_path": directory + "/lookup_unit_liths.csv",
+  "lookup_strat_name_hierarchy_path": directory + "/lookup_strat_name_hierarchy.csv",
   "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)
 }
 
@@ -282,6 +283,13 @@ my_cur.execute("""
   SELECT unit_id, lith_class, lith_type, lith_short, lith_long, environ_class, environ_type, environ
   FROM lookup_unit_liths
   INTO OUTFILE %(lookup_unit_liths_path)s
+  FIELDS TERMINATED BY ','
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n';
+
+  SELECT id, strat_name_id, parent 
+  FROM lookup_strat_name_hierarchy
+  INTO OUTFILE %(lookup_strat_name_hierarchy_path)s
   FIELDS TERMINATED BY ','
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
@@ -486,6 +494,21 @@ CREATE INDEX ON macrostrat_new.lookup_strat_names (sgp_id);
 CREATE INDEX ON macrostrat_new.lookup_strat_names (strat_name);
 
 
+
+
+CREATE TABLE macrostrat_new.lookup_strat_name_hierarchy (
+  id integer,
+  strat_name_id integer,
+  parent integer
+);
+
+COPY macrostrat_new.lookup_strat_name_hierarchy FROM %(lookup_strat_name_hierarchy_path)s NULL '\N' DELIMITER ',' CSV;
+
+CREATE INDEX ON macrostrat_new.lookup_strat_name_hierarchy (strat_name_id);
+CREATE INDEX ON macrostrat_new.lookup_strat_name_hierarchy (parent);
+
+
+
 CREATE TABLE macrostrat_new.cols (
   id integer PRIMARY KEY,
   col_group_id smallint,
@@ -632,6 +655,7 @@ pg_cur.execute("VACUUM ANALYZE macrostrat_new.intervals;", {"macrostrat_schema":
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.lookup_unit_intervals;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.units;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.lookup_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
+pg_cur.execute("VACUUM ANALYZE macrostrat_new.lookup_strat_name_hierarchy;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.cols;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.col_areas;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.liths;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
@@ -789,7 +813,8 @@ pg_cur.execute("""
       bgm.b_age AS macro_b_age, 
       bgm.t_age AS macro_t_age, 
       i2.interval_color AS macro_color, 
-      geom, 
+      ST_Area(geom::geography)*0.000001 AS area_km2,
+      geom,
       to_tsvector('macro', concat(unit_name, ' ', strat_unit, ' ', unitdesc, ' ', unit_com)) AS text_search
 
     FROM gmus.geologic_units gu

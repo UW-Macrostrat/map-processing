@@ -5,7 +5,7 @@ import urllib2
 lith_data = json.loads(urllib2.urlopen('http://localhost:5000/api/v1/defs/lithologies?all').read())
 
 lithologies = ['au', 'aux', 'de', 'du', 'la', 'formation', 'member', 'group', 'supergroup', 'beds', 'bed', 'submember', 'metaquartzite', 'bentonite']
-upperLiths = []
+upperLiths = ['Dolostone']
 ranks = ['formation', 'member', 'group', 'supergroup', 'bed', 'beds', 'submember']
 
 for lith in lith_data['success']['data']:
@@ -42,7 +42,7 @@ def flattenHierarchy(name):
     rank = 'Fm'
     name = name.replace('Formatione', '').replace('Formation', '').replace('formation', '')
 
-  if ' Member' in name or ' member' in name:
+  if 'Member' in name or ' member ' in name or 'Lentil' in name or 'Lens' in name or 'Tongue' in name:
     rank = 'Mbr'
     name = name.replace('Member', '').replace('member', '')
 
