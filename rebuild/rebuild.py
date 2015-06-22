@@ -179,7 +179,6 @@ params = {
   "timescales_intervals_path": directory + "/timescales_intervals.csv",
   "unit_liths_path": directory + "/unit_liths.csv",
   "lookup_unit_liths_path": directory + "/lookup_unit_liths.csv",
-  "lookup_strat_name_hierarchy_path": directory + "/lookup_strat_name_hierarchy.csv",
   "macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)
 }
 
@@ -287,12 +286,6 @@ my_cur.execute("""
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n';
 
-  SELECT id, strat_name_id, parent 
-  FROM lookup_strat_name_hierarchy
-  INTO OUTFILE %(lookup_strat_name_hierarchy_path)s
-  FIELDS TERMINATED BY ','
-  ENCLOSED BY '"'
-  LINES TERMINATED BY '\n';
 
 """, params)
 
@@ -495,20 +488,6 @@ CREATE INDEX ON macrostrat_new.lookup_strat_names (strat_name);
 
 
 
-
-CREATE TABLE macrostrat_new.lookup_strat_name_hierarchy (
-  id integer,
-  strat_name_id integer,
-  parent integer
-);
-
-COPY macrostrat_new.lookup_strat_name_hierarchy FROM %(lookup_strat_name_hierarchy_path)s NULL '\N' DELIMITER ',' CSV;
-
-CREATE INDEX ON macrostrat_new.lookup_strat_name_hierarchy (strat_name_id);
-CREATE INDEX ON macrostrat_new.lookup_strat_name_hierarchy (parent);
-
-
-
 CREATE TABLE macrostrat_new.cols (
   id integer PRIMARY KEY,
   col_group_id smallint,
@@ -655,7 +634,6 @@ pg_cur.execute("VACUUM ANALYZE macrostrat_new.intervals;", {"macrostrat_schema":
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.lookup_unit_intervals;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.units;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.lookup_strat_names;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
-pg_cur.execute("VACUUM ANALYZE macrostrat_new.lookup_strat_name_hierarchy;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.cols;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.col_areas;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
 pg_cur.execute("VACUUM ANALYZE macrostrat_new.liths;", {"macrostrat_schema": AsIs(credentials.pg_macrostrat_schema)})
